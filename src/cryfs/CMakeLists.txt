@@ -1,7 +1,9 @@
 project (cryfs)
 
+include(utils.cmake)
+
 set(LIB_SOURCES
-#    cryfs.cpp
+        #    cryfs.cpp
         impl/CryfsException.cpp
         impl/config/crypto/outer/OuterConfig.cpp
         impl/config/crypto/outer/OuterEncryptor.cpp
@@ -47,15 +49,21 @@ set(LIB_SOURCES
         impl/localstate/LocalStateDir.cpp
         impl/localstate/LocalStateMetadata.cpp
         impl/localstate/BasedirMetadata.cpp
-)
+        )
 
-add_library(${PROJECT_NAME} STATIC ${LIB_SOURCES})
-target_link_libraries(${PROJECT_NAME} PUBLIC cpp-utils fspp-interface blockstore blobstore gitversion)
-target_add_boost(${PROJECT_NAME}) # TODO Check that dependent projects don't get boost added (use PRIVATE here)
-target_enable_style_warnings(${PROJECT_NAME})
-target_activate_cpp14(${PROJECT_NAME})
+add_library(cryfs STATIC ${LIB_SOURCES})
+target_link_libraries(cryfs PUBLIC cpp-utils fspp-interface blockstore blobstore gitversion)
+target_add_boost(cryfs) # TODO Check that dependent projects don't get boost added (use PRIVATE here)
+#target_enable_style_warnings(cryfs)
+target_activate_cpp14(cryfs)
 
-#install(TARGETS ${PROJECT_NAME}
+#install(TARGETS cryfs
 #        DESTINATION lib
 #        CONFIGURATIONS Release
 #)
+
+#target_include_directories(cryfseds3
+#        PRIVATE
+#        ../cpp-utils
+#        )
+
