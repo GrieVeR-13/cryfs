@@ -25,28 +25,28 @@ endfunction(target_activate_cpp14)
 # Find clang-tidy executable (for use in target_enable_style_warnings)
 if (USE_CLANG_TIDY)
     find_program(
-      CLANG_TIDY_EXE
-      NAMES "clang-tidy"
-      DOC "Path to clang-tidy executable"
+            CLANG_TIDY_EXE
+            NAMES "clang-tidy"
+            DOC "Path to clang-tidy executable"
     )
     if(NOT CLANG_TIDY_EXE)
-      message(FATAL_ERROR "clang-tidy not found. Please install clang-tidy or run without -DUSE_CLANG_TIDY=on.")
+        message(FATAL_ERROR "clang-tidy not found. Please install clang-tidy or run without -DUSE_CLANG_TIDY=on.")
     else()
-      set(CLANG_TIDY_OPTIONS "-system-headers=0")
-      if (CLANG_TIDY_WARNINGS_AS_ERRORS)
-          set(CLANG_TIDY_OPTIONS "${CLANG_TIDY_OPTIONS}" "-warnings-as-errors=*")
-      endif()
-      message(STATUS "Clang-tidy is enabled. Executable: ${CLANG_TIDY_EXE} Arguments: ${CLANG_TIDY_OPTIONS}")
-      set(CLANG_TIDY_CLI "${CLANG_TIDY_EXE}" "${CLANG_TIDY_OPTIONS}")
+        set(CLANG_TIDY_OPTIONS "-system-headers=0")
+        if (CLANG_TIDY_WARNINGS_AS_ERRORS)
+            set(CLANG_TIDY_OPTIONS "${CLANG_TIDY_OPTIONS}" "-warnings-as-errors=*")
+        endif()
+        message(STATUS "Clang-tidy is enabled. Executable: ${CLANG_TIDY_EXE} Arguments: ${CLANG_TIDY_OPTIONS}")
+        set(CLANG_TIDY_CLI "${CLANG_TIDY_EXE}" "${CLANG_TIDY_OPTIONS}")
     endif()
 endif()
 
 # Find iwyu (for use in target_enable_style_warnings)
 if (USE_IWYU)
     find_program(
-      IWYU_EXE NAMES
-      include-what-you-use
-      iwyu
+            IWYU_EXE NAMES
+            include-what-you-use
+            iwyu
     )
     if(NOT IWYU_EXE)
         message(FATAL_ERROR "include-what-you-use not found. Please install iwyu or run without -DUSE_IWYU=on.")
@@ -78,14 +78,14 @@ function(target_enable_style_warnings TARGET)
     # Enable clang-tidy
     if(USE_CLANG_TIDY)
         set_target_properties(
-          ${TARGET} PROPERTIES
-          CXX_CLANG_TIDY "${CLANG_TIDY_CLI}"
+                ${TARGET} PROPERTIES
+                CXX_CLANG_TIDY "${CLANG_TIDY_CLI}"
         )
     endif()
     if(USE_IWYU)
         set_target_properties(
-          ${TARGET} PROPERTIES
-          CXX_INCLUDE_WHAT_YOU_USE "${DO_IWYU}"
+                ${TARGET} PROPERTIES
+                CXX_INCLUDE_WHAT_YOU_USE "${DO_IWYU}"
         )
     endif()
 endfunction(target_enable_style_warnings)
@@ -97,8 +97,12 @@ endfunction(target_enable_style_warnings)
 #  target_add_boost(buildtarget)
 ##################################################
 function(target_add_boost TARGET)
-    target_link_libraries(${TARGET} PUBLIC CryfsDependencies_boost)
+    #    target_link_libraries(${TARGET} PUBLIC CryfsDependencies_boost)
     target_compile_definitions(${TARGET} PUBLIC BOOST_THREAD_VERSION=4)
+#    target_include_directories(${TARGET}
+#            PRIVATE
+#            ../../../boost/include
+#            )
 endfunction(target_add_boost)
 
 ##################################################
@@ -130,8 +134,8 @@ function(require_clang_version VERSION)
     endif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endfunction(require_clang_version)
 
-include(cmake-utils/TargetArch.cmake)
+#include(cmake-utils/TargetArch.cmake)
 function(get_target_architecture output_var)
-	target_architecture(local_output_var)
-	set(${output_var} ${local_output_var} PARENT_SCOPE)
+    target_architecture(local_output_var)
+    set(${output_var} ${local_output_var} PARENT_SCOPE)
 endfunction()

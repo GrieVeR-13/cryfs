@@ -46,8 +46,13 @@ endif()
 
 include(${DEPENDENCY_CONFIG})
 
+
 add_subdirectory(vendor EXCLUDE_FROM_ALL)
+
+include_directories(vendor/cryptopp)
+include_directories(../boost/include)
+
 add_subdirectory(src)
-add_subdirectory(doc)
-add_subdirectory(test)
-add_subdirectory(cpack)
+#add_subdirectory(doc)
+#add_subdirectory(test)
+#add_subdirectory(cpack)

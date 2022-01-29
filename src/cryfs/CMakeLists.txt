@@ -1,6 +1,6 @@
 project (cryfs)
 
-include(utils.cmake)
+#include(utils.cmake)
 
 set(LIB_SOURCES
         #    cryfs.cpp
@@ -52,10 +52,10 @@ set(LIB_SOURCES
         )
 
 add_library(cryfs STATIC ${LIB_SOURCES})
-#target_link_libraries(cryfs PUBLIC cpp-utils)
+target_link_libraries(cryfs PUBLIC cpp-utils)
 #target_link_libraries(cryfs PUBLIC cpp-utils fspp-interface blockstore blobstore gitversion)
 target_add_boost(cryfs) # TODO Check that dependent projects don't get boost added (use PRIVATE here)
-#target_enable_style_warnings(cryfs)
+target_enable_style_warnings(cryfs)
 target_activate_cpp14(cryfs)
 
 #install(TARGETS cryfs
@@ -63,14 +63,3 @@ target_activate_cpp14(cryfs)
 #        CONFIGURATIONS Release
 #)
 
-#target_include_directories(cryfseds3
-#        PRIVATE
-#        ../cpp-utils
-#        )
-
-
-target_include_directories(cryfs
-        PRIVATE
-        ../../src
-        ../../../cryfs/vendor/cryptopp
-        )

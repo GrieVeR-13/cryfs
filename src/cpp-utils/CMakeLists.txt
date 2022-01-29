@@ -1,7 +1,5 @@
-include(utils.cmake)
-
-SET(LIBBOOST_DIR ../../../boost)
-add_library(boost_filesystem STATIC IMPORTED)
+#SET(LIBBOOST_DIR ../../../boost)
+#add_library(boost_filesystem STATIC IMPORTED)
 
 if ("${ANDROID_ABI}" STREQUAL "armeabi-v7a")
     set(SHORT_ABI a32)
@@ -13,8 +11,8 @@ elseif("${ANDROID_ABI}" STREQUAL "x86_64")
     set(SHORT_ABI x64)
 endif()
 
-set_target_properties(boost_filesystem
-        PROPERTIES IMPORTED_LOCATION ${LIBBOOST_DIR}/libs/${ANDROID_ABI}/libboost_atomic-clang-mt-${SHORT_ABI}-1_74.a)
+#set_target_properties(boost_filesystem
+#        PROPERTIES IMPORTED_LOCATION ${LIBBOOST_DIR}/libs/${ANDROID_ABI}/libboost_atomic-clang-mt-${SHORT_ABI}-1_74.a)
 
 set(SOURCES
         crypto/symmetric/ciphers.cpp
@@ -77,12 +75,7 @@ set(SOURCES
 
 add_library(cpp-utils STATIC ${SOURCES})
 #target_link_libraries(CryfsDependencies_boost INTERFACE Boost::boost Boost::filesystem Boost::thread Boost::chrono Boost::program_options)
-target_include_directories(cpp-utils
-        PUBLIC
-        ../../src
-        ../../../cryfs/vendor/cryptopp
-        ${LIBBOOST_DIR}/include
-        )
+
 
 if(MSVC)
     target_link_libraries(cpp-utils PUBLIC DbgHelp)
@@ -114,7 +107,7 @@ target_link_libraries(cpp-utils PUBLIC ${CMAKE_DL_LIBS})
 
 #target_link_libraries(cpp-utils PUBLIC CryfsDependencies_spdlog cryptopp CryfsDependencies_range-v3)
 
-#target_add_boost(cpp-utils)
+target_add_boost(cpp-utils)
 target_enable_style_warnings(cpp-utils)
 target_activate_cpp14(cpp-utils)
 
