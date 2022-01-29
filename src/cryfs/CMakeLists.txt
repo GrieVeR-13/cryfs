@@ -3,6 +3,8 @@ project (cryfs)
 #include(utils.cmake)
 
 set(LIB_SOURCES
+#        RunFileSystem.cpp
+
         #    cryfs.cpp
         impl/CryfsException.cpp
         impl/config/crypto/outer/OuterConfig.cpp
