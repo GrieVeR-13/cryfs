@@ -47,12 +47,13 @@ set(LIB_SOURCES
         impl/filesystem/CryFile.cpp
         impl/filesystem/CryDevice.cpp
         impl/localstate/LocalStateDir.cpp
-        impl/localstate/LocalStateMetadata.cpp
+#        impl/localstate/LocalStateMetadata.cpp
         impl/localstate/BasedirMetadata.cpp
         )
 
 add_library(cryfs STATIC ${LIB_SOURCES})
-target_link_libraries(cryfs PUBLIC cpp-utils fspp-interface blockstore blobstore gitversion)
+#target_link_libraries(cryfs PUBLIC cpp-utils)
+#target_link_libraries(cryfs PUBLIC cpp-utils fspp-interface blockstore blobstore gitversion)
 target_add_boost(cryfs) # TODO Check that dependent projects don't get boost added (use PRIVATE here)
 #target_enable_style_warnings(cryfs)
 target_activate_cpp14(cryfs)
@@ -67,3 +68,9 @@ target_activate_cpp14(cryfs)
 #        ../cpp-utils
 #        )
 
+
+target_include_directories(cryfs
+        PRIVATE
+        ../../src
+        ../../../cryfs/vendor/cryptopp
+        )
