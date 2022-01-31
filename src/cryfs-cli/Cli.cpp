@@ -72,13 +72,13 @@ using gitversion::VersionCompare;
 
 namespace cryfs_cli {
 
-    Cli::Cli(RandomGenerator &keyGenerator, const SCryptSettings &scryptSettings, shared_ptr<Console> console):
+    Cli::Cli(RandomGenerator &keyGenerator, const SCryptSettings &scryptSettings):
             _keyGenerator(keyGenerator), _scryptSettings(scryptSettings), _console(), _noninteractive(false), _idleUnmounter(none), _device(none) {
 //        _noninteractive = Environment::isNoninteractive();
         if (_noninteractive) {
 //            _console = make_shared<NoninteractiveConsole>(console);
         } else {
-            _console = console;
+//            _console = console;
         }
     }
 
@@ -445,12 +445,12 @@ namespace cryfs_cli {
         return false;
     }
 
-    int Cli::main(int argc, const char **argv, unique_ref<HttpClient> httpClient, std::function<void()> onMounted) {
+    int Cli::main(int argc, const char **argv, std::function<void()> onMounted) {
 //        cpputils::showBacktraceOnCrash();
         cpputils::set_thread_name("cryfs");
 
         try {
-            _showVersion(std::move(httpClient));
+//            _showVersion(std::move(httpClient));
             ProgramOptions options = program_options::Parser(argc, argv).parse(CryCiphers::supportedCipherNames());
             _sanityChecks(options);
             _runFilesystem(options, std::move(onMounted));
