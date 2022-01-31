@@ -2,13 +2,13 @@ project (cryfs-cli)
 INCLUDE(GNUInstallDirs)
 
 set(SOURCES
-#        Cli.cpp
+        Cli.cpp
 #        VersionChecker.cpp
 #        CallAfterTimeout.cpp
 #        Environment.cpp
-#        program_options/utils.cpp
-#        program_options/ProgramOptions.cpp
-#        program_options/Parser.cpp
+        program_options/utils.cpp
+        program_options/ProgramOptions.cpp
+        program_options/Parser.cpp
         RunFileSystem.cpp
 )
 

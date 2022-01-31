@@ -41,7 +41,7 @@ namespace cpputils {
         };
 
         inline std::string format(const char *expr, const std::string &message, const char *file, int line) {
-            std::string result = std::string()+"Assertion ["+expr+"] failed in "+file+":"+std::to_string(line)+": "+message+"\n\n" + backtrace();
+            std::string result = std::string()+"Assertion ["+expr+"] failed in "+file+":"+std::to_string(line)+": "+message+"\n\n";
             return result;
         }
 

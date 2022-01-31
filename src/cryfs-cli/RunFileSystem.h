@@ -8,6 +8,7 @@
 
 class RunFileSystem {
 
+public:
     static void run();
 };
 

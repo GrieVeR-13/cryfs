@@ -105,7 +105,8 @@ uint64_t OnDiskBlockStore2::numBlocks() const {
 }
 
 uint64_t OnDiskBlockStore2::estimateNumFreeBytes() const {
-	return cpputils::free_disk_space_in_bytes(_rootDir);
+//	return cpputils::free_disk_space_in_bytes(_rootDir);
+  return 0;
 }
 
 uint64_t OnDiskBlockStore2::blockSizeFromPhysicalBlockSize(uint64_t blockSize) const {

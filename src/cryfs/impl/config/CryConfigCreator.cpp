@@ -23,8 +23,8 @@ namespace cryfs {
         CryConfig config;
         config.SetCipher(_generateCipher(cipherFromCommandLine));
         config.SetVersion(CryConfig::FilesystemFormatVersion);
-        config.SetCreatedWithVersion(gitversion::VersionString());
-        config.SetLastOpenedWithVersion(gitversion::VersionString());
+//        config.SetCreatedWithVersion(gitversion::VersionString());
+//        config.SetLastOpenedWithVersion(gitversion::VersionString());
         config.SetBlocksizeBytes(_generateBlocksizeBytes(blocksizeBytesFromCommandLine));
         config.SetRootBlob(_generateRootBlobId());
         config.SetFilesystemId(_generateFilesystemID());

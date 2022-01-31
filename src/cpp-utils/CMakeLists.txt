@@ -1,4 +1,5 @@
-#SET(LIBBOOST_DIR ../../../boost)
+#SET(LIBBOOST_DIR ../../../boost)\
+#SET(LIBBOOST_DIR ../../../../../third_party/boost)
 #add_library(boost_filesystem STATIC IMPORTED)
 
 if ("${ANDROID_ABI}" STREQUAL "armeabi-v7a")
@@ -12,7 +13,7 @@ elseif("${ANDROID_ABI}" STREQUAL "x86_64")
 endif()
 
 #set_target_properties(boost_filesystem
-#        PROPERTIES IMPORTED_LOCATION ${LIBBOOST_DIR}/libs/${ANDROID_ABI}/libboost_atomic-clang-mt-${SHORT_ABI}-1_74.a)
+#        PROPERTIES IMPORTED_LOCATION ${LIBBOOST_DIR}/libs/${ANDROID_ABI}/libboost_filesystem-clang-mt-${SHORT_ABI}-1_74.a)
 
 set(SOURCES
         crypto/symmetric/ciphers.cpp
@@ -20,15 +21,15 @@ set(SOURCES
         crypto/kdf/Scrypt.cpp
         crypto/kdf/SCryptParameters.cpp
         crypto/kdf/PasswordBasedKDF.cpp
-#        crypto/RandomPadding.cpp
+        crypto/RandomPadding.cpp
         crypto/symmetric/EncryptionKey.cpp
         crypto/hash/Hash.cpp
 #        process/daemonize.cpp
 #        process/subprocess.cpp
         process/SignalCatcher.cpp
         process/SignalHandler.cpp
-#        tempfile/TempFile.cpp
-#        tempfile/TempDir.cpp
+        tempfile/TempFile.cpp
+        tempfile/TempDir.cpp
 #        network/HttpClient.cpp
 #        network/CurlHttpClient.cpp
 #		network/WinHttpClient.cpp
@@ -39,13 +40,13 @@ set(SOURCES
 #        io/NoninteractiveConsole.cpp
         io/pipestream.cpp
 #        io/ProgressBar.cpp
-#        thread/LoopThread.cpp
-#        thread/ThreadSystem.cpp
-#        thread/debugging_nonwindows.cpp
+        thread/LoopThread.cpp
+        thread/ThreadSystem.cpp
+        thread/debugging_nonwindows.cpp
 #        thread/debugging_windows.cpp
         thread/LeftRight.cpp
         random/Random.cpp
-#        random/RandomGeneratorThread.cpp
+        random/RandomGeneratorThread.cpp
         random/OSRandomGenerator.cpp
         random/PseudoRandomPool.cpp
         random/RandomDataBuffer.cpp
@@ -74,6 +75,7 @@ set(SOURCES
 )
 
 add_library(cpp-utils STATIC ${SOURCES})
+target_link_libraries(cpp-utils PUBLIC boost_filesystem boost_thread boost_chrono boost_program_options)
 #target_link_libraries(CryfsDependencies_boost INTERFACE Boost::boost Boost::filesystem Boost::thread Boost::chrono Boost::program_options)
 
 
@@ -105,6 +107,8 @@ target_link_libraries(cpp-utils PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
 target_link_libraries(cpp-utils PUBLIC ${CMAKE_DL_LIBS})
 
+target_link_libraries(cpp-utils PUBLIC cryptopp)
+#target_link_libraries(cpp-utils PUBLIC boost_filesystem)
 #target_link_libraries(cpp-utils PUBLIC CryfsDependencies_spdlog cryptopp CryfsDependencies_range-v3)
 
 target_add_boost(cpp-utils)

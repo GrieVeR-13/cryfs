@@ -196,25 +196,25 @@ void Parser::_addPositionalOptionForBaseDir(po::options_description *desc, po::p
 }
 
 void Parser::_showHelp() {
-  cerr << "Usage: cryfs [options] baseDir mountPoint [-- [FUSE Mount Options]]\n";
-  po::options_description desc;
-  _addAllowedOptions(&desc);
-  cerr << desc << endl;
-  cerr << "Environment variables:\n"
-       << "  " << Environment::FRONTEND_KEY << "=" << Environment::FRONTEND_NONINTERACTIVE << "\n"
-       << "\tWork better together with tools.\n"
-       << "\tWith this option set, CryFS won't ask anything, but use default values\n"
-       << "\tfor options you didn't specify on command line. Furthermore, it won't\n"
-       << "\task you to enter a new password a second time (password confirmation).\n"
-       << "  " << Environment::NOUPDATECHECK_KEY << "=true\n"
-       << "\tBy default, CryFS connects to the internet to check for known\n"
-       << "\tsecurity vulnerabilities and new versions. This option disables this.\n"
-       << "  " << Environment::LOCALSTATEDIR_KEY << "=[path]\n"
-       << "\tSets the directory cryfs uses to store local state. This local state\n"
-       << "\tis used to recognize known file systems and run integrity checks,\n"
-       << "\ti.e. check that they haven't been modified by an attacker.\n"
-       << "\tDefault value: " << Environment::defaultLocalStateDir().string() << "\n"
-       << endl;
+//  cerr << "Usage: cryfs [options] baseDir mountPoint [-- [FUSE Mount Options]]\n";
+//  po::options_description desc;
+//  _addAllowedOptions(&desc);
+//  cerr << desc << endl;
+//  cerr << "Environment variables:\n"
+//       << "  " << Environment::FRONTEND_KEY << "=" << Environment::FRONTEND_NONINTERACTIVE << "\n"
+//       << "\tWork better together with tools.\n"
+//       << "\tWith this option set, CryFS won't ask anything, but use default values\n"
+//       << "\tfor options you didn't specify on command line. Furthermore, it won't\n"
+//       << "\task you to enter a new password a second time (password confirmation).\n"
+//       << "  " << Environment::NOUPDATECHECK_KEY << "=true\n"
+//       << "\tBy default, CryFS connects to the internet to check for known\n"
+//       << "\tsecurity vulnerabilities and new versions. This option disables this.\n"
+//       << "  " << Environment::LOCALSTATEDIR_KEY << "=[path]\n"
+//       << "\tSets the directory cryfs uses to store local state. This local state\n"
+//       << "\tis used to recognize known file systems and run integrity checks,\n"
+//       << "\ti.e. check that they haven't been modified by an attacker.\n"
+//       << "\tDefault value: " << Environment::defaultLocalStateDir().string() << "\n"
+//       << endl;
 }
 
 [[noreturn]] void Parser::_showHelpAndExit(const std::string& message, ErrorCode errorCode) {

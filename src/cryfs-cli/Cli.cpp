@@ -6,7 +6,8 @@
 #include <cstdlib>
 #include <cpp-utils/assert/backtrace.h>
 
-#include <fspp/fuse/Fuse.h>
+//#include <fspp/fuse/Fuse.h>
+#include "Fuse.h"
 #include <fspp/impl/FilesystemImpl.h>
 #include <cpp-utils/process/subprocess.h>
 #include <cpp-utils/io/DontEchoStdinToStdoutRAII.h>
@@ -21,7 +22,7 @@
 
 #include "VersionChecker.h"
 #include <gitversion/VersionCompare.h>
-#include <cpp-utils/io/NoninteractiveConsole.h>
+//#include <cpp-utils/io/NoninteractiveConsole.h>
 #include <cryfs/impl/localstate/LocalStateDir.h>
 #include <cryfs/impl/localstate/BasedirMetadata.h>
 #include "Environment.h"
@@ -40,7 +41,7 @@ using blockstore::ondisk::OnDiskBlockStore2;
 using program_options::ProgramOptions;
 
 using cpputils::make_unique_ref;
-using cpputils::NoninteractiveConsole;
+//using cpputils::NoninteractiveConsole;
 using cpputils::TempFile;
 using cpputils::RandomGenerator;
 using cpputils::unique_ref;
@@ -73,33 +74,33 @@ namespace cryfs_cli {
 
     Cli::Cli(RandomGenerator &keyGenerator, const SCryptSettings &scryptSettings, shared_ptr<Console> console):
             _keyGenerator(keyGenerator), _scryptSettings(scryptSettings), _console(), _noninteractive(false), _idleUnmounter(none), _device(none) {
-        _noninteractive = Environment::isNoninteractive();
+//        _noninteractive = Environment::isNoninteractive();
         if (_noninteractive) {
-            _console = make_shared<NoninteractiveConsole>(console);
+//            _console = make_shared<NoninteractiveConsole>(console);
         } else {
             _console = console;
         }
     }
 
     void Cli::_showVersion(unique_ref<HttpClient> httpClient) {
-        cout << "CryFS Version " << gitversion::VersionString() << endl;
-        if (gitversion::IsDevVersion()) {
-            cout << "WARNING! This is a development version based on git commit " << gitversion::GitCommitId() <<
-            ". Please do not use in production!" << endl;
-        } else if (!gitversion::IsStableVersion()) {
-            cout << "WARNING! This is an experimental version. Please backup your data frequently!" << endl;
-        }
+//        cout << "CryFS Version " << gitversion::VersionString() << endl;
+//        if (gitversion::IsDevVersion()) {
+//            cout << "WARNING! This is a development version based on git commit " << gitversion::GitCommitId() <<
+//            ". Please do not use in production!" << endl;
+//        } else if (!gitversion::IsStableVersion()) {
+//            cout << "WARNING! This is an experimental version. Please backup your data frequently!" << endl;
+//        }
 #ifndef NDEBUG
         cout << "WARNING! This is a debug build. Performance might be slow." << endl;
 #endif
 #ifndef CRYFS_NO_UPDATE_CHECKS
-        if (Environment::noUpdateCheck()) {
-            cout << "Automatic checking for security vulnerabilities and updates is disabled." << endl;
-        } else if (Environment::isNoninteractive()) {
-            cout << "Automatic checking for security vulnerabilities and updates is disabled in noninteractive mode." << endl;
-        } else {
-            _checkForUpdates(std::move(httpClient));
-        }
+//        if (Environment::noUpdateCheck()) {
+//            cout << "Automatic checking for security vulnerabilities and updates is disabled." << endl;
+//        } else if (Environment::isNoninteractive()) {
+//            cout << "Automatic checking for security vulnerabilities and updates is disabled in noninteractive mode." << endl;
+//        } else {
+//            _checkForUpdates(std::move(httpClient));
+//        }
 #else
 # warning Update checks are disabled. The resulting executable will not go online to check for newer versions or known security vulnerabilities.
         UNUSED(httpClient);
@@ -108,17 +109,17 @@ namespace cryfs_cli {
     }
 
     void Cli::_checkForUpdates(unique_ref<HttpClient> httpClient) {
-        VersionChecker versionChecker(httpClient.get());
-        optional<string> newestVersion = versionChecker.newestVersion();
-        if (newestVersion == none) {
-            cout << "Could not check for updates." << endl;
-        } else if (VersionCompare::isOlderThan(gitversion::VersionString(), *newestVersion)) {
-            cout << "CryFS " << *newestVersion << " is released. Please update." << endl;
-        }
-        optional<string> securityWarning = versionChecker.securityWarningFor(gitversion::VersionString());
-        if (securityWarning != none) {
-            cout << *securityWarning << endl;
-        }
+//        VersionChecker versionChecker(httpClient.get());
+//        optional<string> newestVersion = versionChecker.newestVersion();
+//        if (newestVersion == none) {
+//            cout << "Could not check for updates." << endl;
+//        } else if (VersionCompare::isOlderThan(gitversion::VersionString(), *newestVersion)) {
+//            cout << "CryFS " << *newestVersion << " is released. Please update." << endl;
+//        }
+//        optional<string> securityWarning = versionChecker.securityWarningFor(gitversion::VersionString());
+//        if (securityWarning != none) {
+//            cout << *securityWarning << endl;
+//        }
     }
 
     bool Cli::_checkPassword(const string &password) {
@@ -258,18 +259,19 @@ namespace cryfs_cli {
 
     void Cli::_runFilesystem(const ProgramOptions &options, std::function<void()> onMounted) {
         try {
-            LocalStateDir localStateDir(Environment::localStateDir());
+            auto a = bf::path();
+            LocalStateDir localStateDir(a);
             auto blockStore = make_unique_ref<OnDiskBlockStore2>(options.baseDir());
             auto config = _loadOrCreateConfig(options, localStateDir);
             printConfig(config.oldConfig, *config.configFile->config());
-            unique_ptr<fspp::fuse::Fuse> fuse = nullptr;
+            unique_ptr<Fuse> fuse = nullptr;
             bool stoppedBecauseOfIntegrityViolation = false;
 
             auto onIntegrityViolation = [&fuse, &stoppedBecauseOfIntegrityViolation] () {
               if (fuse.get() != nullptr) {
                 LOG(ERR, "Integrity violation detected. Unmounting.");
                 stoppedBecauseOfIntegrityViolation = true;
-                fuse->stop();
+//                fuse->stop();
               } else {
                 // Usually on an integrity violation, the file system is unmounted.
                 // Here, the file system isn't initialized yet, i.e. we failed in the initial steps when
@@ -282,14 +284,14 @@ namespace cryfs_cli {
             _device = optional<unique_ref<CryDevice>>(make_unique_ref<CryDevice>(std::move(config.configFile), std::move(blockStore), std::move(localStateDir), config.myClientId, options.allowIntegrityViolations(), missingBlockIsIntegrityViolation, std::move(onIntegrityViolation)));
             _sanityCheckFilesystem(_device->get());
 
-            auto initFilesystem = [&] (fspp::fuse::Fuse *fs){
+            auto initFilesystem = [&] (Fuse *fs){
                 ASSERT(_device != none, "File system not ready to be initialized. Was it already initialized before?");
 
                 //TODO Test auto unmounting after idle timeout
                 const boost::optional<double> idle_minutes = options.unmountAfterIdleMinutes();
                 _idleUnmounter = _createIdleCallback(idle_minutes, [fs, idle_minutes] {
                     LOG(INFO, "Unmounting because file system was idle for {} minutes", *idle_minutes);
-                    fs->stop();
+//                    fs->stop();
                 });
                 if (_idleUnmounter != none) {
                     (*_device)->onFsAction(std::bind(&CallAfterTimeout::resetTimer, _idleUnmounter->get()));
@@ -298,7 +300,7 @@ namespace cryfs_cli {
                 return make_shared<fspp::FilesystemImpl>(std::move(*_device));
             };
 
-            fuse = make_unique<fspp::fuse::Fuse>(initFilesystem, std::move(onMounted), "cryfs", "cryfs@" + options.baseDir().string());
+//            fuse = make_unique<fspp::fuse::Fuse>(initFilesystem, std::move(onMounted), "cryfs", "cryfs@" + options.baseDir().string());
 
             _initLogfile(options);
 
@@ -306,9 +308,9 @@ namespace cryfs_cli {
                       << std::endl;
 
             if (options.foreground()) {
-                fuse->runInForeground(options.mountDir(), options.fuseOptions());
+//                fuse->runInForeground(options.mountDir(), options.fuseOptions());
             } else {
-                fuse->runInBackground(options.mountDir(), options.fuseOptions());
+//                fuse->runInBackground(options.mountDir(), options.fuseOptions());
             }
 
             if (stoppedBecauseOfIntegrityViolation) {
@@ -345,16 +347,16 @@ namespace cryfs_cli {
     }
 
     void Cli::_initLogfile(const ProgramOptions &options) {
-        spdlog::drop("cryfs");
+//        spdlog::drop("cryfs");
         //TODO Test that --logfile parameter works. Should be: file if specified, otherwise stderr if foreground, else syslog.
-        if (options.logFile() != none) {
-            cpputils::logging::setLogger(
-                spdlog::create<spdlog::sinks::basic_file_sink_mt>("cryfs", options.logFile()->string()));
-        } else if (options.foreground()) {
-            cpputils::logging::setLogger(spdlog::stderr_logger_mt("cryfs"));
-        } else {
-            cpputils::logging::setLogger(cpputils::logging::system_logger("cryfs"));
-        }
+//        if (options.logFile() != none) {
+//            cpputils::logging::setLogger(
+//                spdlog::create<spdlog::sinks::basic_file_sink_mt>("cryfs", options.logFile()->string()));
+//        } else if (options.foreground()) {
+//            cpputils::logging::setLogger(spdlog::stderr_logger_mt("cryfs"));
+//        } else {
+//            cpputils::logging::setLogger(cpputils::logging::system_logger("cryfs"));
+//        }
     }
 
 	void Cli::_sanityChecks(const ProgramOptions &options) {
@@ -444,7 +446,7 @@ namespace cryfs_cli {
     }
 
     int Cli::main(int argc, const char **argv, unique_ref<HttpClient> httpClient, std::function<void()> onMounted) {
-        cpputils::showBacktraceOnCrash();
+//        cpputils::showBacktraceOnCrash();
         cpputils::set_thread_name("cryfs");
 
         try {

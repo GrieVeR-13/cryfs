@@ -6,6 +6,7 @@ set(LIB_SOURCES
 #        RunFileSystem.cpp
 
         #    cryfs.cpp
+        impl/config/Testtt.cpp
         impl/CryfsException.cpp
         impl/config/crypto/outer/OuterConfig.cpp
         impl/config/crypto/outer/OuterEncryptor.cpp
@@ -49,7 +50,7 @@ set(LIB_SOURCES
         impl/filesystem/CryFile.cpp
         impl/filesystem/CryDevice.cpp
         impl/localstate/LocalStateDir.cpp
-#        impl/localstate/LocalStateMetadata.cpp
+        impl/localstate/LocalStateMetadata.cpp
         impl/localstate/BasedirMetadata.cpp
         )
 

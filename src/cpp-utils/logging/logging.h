@@ -16,10 +16,10 @@
 namespace cpputils {
     namespace logging {
 
-		struct ERROR_TYPE {};
-		struct WARN_TYPE {};
-		struct INFO_TYPE {};
-		struct DEBUG_TYPE {};
+        struct ERROR_TYPE {};
+        struct WARN_TYPE {};
+        struct INFO_TYPE {};
+        struct DEBUG_TYPE {};
 
         constexpr ERROR_TYPE ERR {};
         constexpr WARN_TYPE WARN {};
@@ -55,7 +55,7 @@ namespace cpputils {
         }
 
         template<class LogType> inline void LOG(LogType logType, const std::string &msg) {
-          LOG(logType, msg.c_str());
+            LOG(logType, msg.c_str());
         }
 
         template <typename... Args>

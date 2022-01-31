@@ -46,10 +46,10 @@ boost::optional<unique_ref<FsBlob>> FsBlobStore::load(const blockstore::BlockId 
         auto fsBlobStore = make_unique_ref<FsBlobStore>(std::move(blobStore));
 
         uint64_t migratedBlocks = 0;
-        cpputils::ProgressBar progressbar("Migrating file system for conflict resolution features. This can take a while...", fsBlobStore->numBlocks());
+//        cpputils::ProgressBar progressbar("Migrating file system for conflict resolution features. This can take a while...", fsBlobStore->numBlocks());
         fsBlobStore->_migrate(std::move(*rootBlob), blockstore::BlockId::Null(), &signalCatcher, [&] (uint32_t numNodes) {
             migratedBlocks += numNodes;
-            progressbar.update(migratedBlocks);
+//            progressbar.update(migratedBlocks);
         });
 
         return fsBlobStore;
