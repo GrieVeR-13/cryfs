@@ -18,6 +18,7 @@ set(SOURCES
   implementations/compressing/compressors/Gzip.cpp
   implementations/encrypted/EncryptedBlockStore2.cpp
   implementations/ondisk/OnDiskBlockStore2.cpp
+  implementations/eds/EdsBlockStore.cpp
   implementations/caching/CachingBlockStore2.cpp
   implementations/caching/cache/PeriodicTask.cpp
   implementations/caching/cache/CacheEntry.cpp

@@ -8,7 +8,10 @@ using cpputils::Data;
 namespace blockstore {
 namespace eds {
 
-EdsBlockStore::EdsBlockStore() {}
+EdsBlockStore::EdsBlockStore()
+{
+
+}
 
 bool EdsBlockStore::tryCreate(const BlockId &blockId, const Data &data) {
   return true;
@@ -26,7 +29,7 @@ void EdsBlockStore::store(const BlockId &blockId, const Data &data) {
 }
 
 uint64_t EdsBlockStore::numBlocks() const {
-  return count;
+//  return count;
 }
 
 uint64_t EdsBlockStore::estimateNumFreeBytes() const {

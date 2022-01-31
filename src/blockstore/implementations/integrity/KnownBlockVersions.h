@@ -11,6 +11,7 @@
 #include <cpp-utils/data/Serializer.h>
 #include <mutex>
 #include <unordered_set>
+#include <unordered_map>
 
 namespace blockstore {
     namespace integrity {

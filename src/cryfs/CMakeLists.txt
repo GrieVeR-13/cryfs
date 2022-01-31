@@ -54,7 +54,7 @@ set(LIB_SOURCES
         )
 
 add_library(cryfs STATIC ${LIB_SOURCES})
-target_link_libraries(cryfs PUBLIC cpp-utils)
+target_link_libraries(cryfs PUBLIC cpp-utils blockstore blobstore)
 #target_link_libraries(cryfs PUBLIC cpp-utils fspp-interface blockstore blobstore gitversion)
 target_add_boost(cryfs) # TODO Check that dependent projects don't get boost added (use PRIVATE here)
 target_enable_style_warnings(cryfs)

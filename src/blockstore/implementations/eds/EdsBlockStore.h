@@ -12,7 +12,7 @@ namespace eds {
 
 class EdsBlockStore final: public BlockStore2 {
 public:
-  explicit EdsBlockStore(const boost::filesystem::path& path);
+  EdsBlockStore();
 
   bool tryCreate(const BlockId &blockId, const cpputils::Data &data) override;
   bool remove(const BlockId &blockId) override;
@@ -25,7 +25,7 @@ public:
 
 private:
 
-  DISALLOW_COPY_AND_ASSIGN(EdsBlockStore2);
+  DISALLOW_COPY_AND_ASSIGN(EdsBlockStore);
 };
 
 }

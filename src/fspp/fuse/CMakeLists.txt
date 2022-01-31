@@ -37,7 +37,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 else() # Linux and macOS
   find_package(PkgConfig REQUIRED)
-  pkg_check_modules(Fuse REQUIRED IMPORTED_TARGET fuse)
+  pkg_check_modules(fuseeds REQUIRED IMPORTED_TARGET fuseeds)
   target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::Fuse)
 endif()
 
