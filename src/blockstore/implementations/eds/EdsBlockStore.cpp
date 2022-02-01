@@ -1,4 +1,7 @@
 #include "EdsBlockStore.h"
+#include <log.h>
+#include <filesystem/FileSystemNative.h>
+#include <pathresolver/PathResolverNative.h>
 
 using std::string;
 using boost::optional;
@@ -48,7 +51,9 @@ namespace blockstore {
         }
 
         EdsBlockStore::EdsBlockStore(const boost::filesystem::path &path)
-                : _rootDir(path) {}
+                : _rootDir(path) {
+
+        }
 
         bool EdsBlockStore::tryCreate(const BlockId &blockId, const Data &data) {
             auto filepath = _getFilepath(blockId);
