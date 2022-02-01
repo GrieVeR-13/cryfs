@@ -1186,6 +1186,8 @@ if (${CMAKE_VERSION} VERSION_GREATER "3.1" AND USE_OPENMP)
   endif()
 
   if (BUILD_STATIC)
+#      set(OpenMP_CXX_FLAGS "-static-openmp -fopenmp")
+#    target_link_libraries(cryptopp-static -static-openmp -fopenmp)
     target_link_libraries(cryptopp-static ${OpenMP_CXX_FLAGS}) # Workaround for Ubuntu 18.04 that otherwise doesn't set -fopenmp for linking
     target_link_libraries(cryptopp-static OpenMP::OpenMP_CXX)
   endif()
