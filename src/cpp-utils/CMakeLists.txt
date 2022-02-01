@@ -37,7 +37,8 @@ set(SOURCES
 #        io/Console.cpp
 #        io/DontEchoStdinToStdoutRAII.cpp
 #        io/IOStreamConsole.cpp
-#        io/NoninteractiveConsole.cpp
+        io/NoninteractiveConsole.cpp
+        io/EdsConsole.cpp
         io/pipestream.cpp
 #        io/ProgressBar.cpp
         thread/LoopThread.cpp

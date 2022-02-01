@@ -5,7 +5,7 @@ set(SOURCES
         Cli.cpp
 #        VersionChecker.cpp
 #        CallAfterTimeout.cpp
-#        Environment.cpp
+        Environment.cpp
         program_options/utils.cpp
         program_options/ProgramOptions.cpp
         program_options/Parser.cpp

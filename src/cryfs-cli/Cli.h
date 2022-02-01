@@ -17,7 +17,7 @@
 namespace cryfs_cli {
     class Cli final {
     public:
-        Cli(cpputils::RandomGenerator &keyGenerator, const cpputils::SCryptSettings& scryptSettings);
+        Cli(cpputils::RandomGenerator &keyGenerator, const cpputils::SCryptSettings& scryptSettings, std::shared_ptr<cpputils::Console> console);
         int main(int argc, const char **argv, std::function<void()> onMounted);
 
     private:

@@ -1,6 +1,7 @@
 #include "Cli.h"
 
-#include <blockstore/implementations/ondisk/OnDiskBlockStore2.h>
+//#include <blockstore/implementations/ondisk/OnDiskBlockStore2.h>
+#include <blockstore/implementations/eds/EdsBlockStore.h>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -22,7 +23,7 @@
 
 #include "VersionChecker.h"
 #include <gitversion/VersionCompare.h>
-//#include <cpp-utils/io/NoninteractiveConsole.h>
+#include <cpp-utils/io/NoninteractiveConsole.h>
 #include <cryfs/impl/localstate/LocalStateDir.h>
 #include <cryfs/impl/localstate/BasedirMetadata.h>
 #include "Environment.h"
@@ -37,11 +38,11 @@ using namespace cryfs;
 namespace bf = boost::filesystem;
 using namespace cpputils::logging;
 
-using blockstore::ondisk::OnDiskBlockStore2;
+using blockstore::eds::EdsBlockStore;
 using program_options::ProgramOptions;
 
 using cpputils::make_unique_ref;
-//using cpputils::NoninteractiveConsole;
+using cpputils::NoninteractiveConsole;
 using cpputils::TempFile;
 using cpputils::RandomGenerator;
 using cpputils::unique_ref;
@@ -72,13 +73,13 @@ using gitversion::VersionCompare;
 
 namespace cryfs_cli {
 
-    Cli::Cli(RandomGenerator &keyGenerator, const SCryptSettings &scryptSettings):
+    Cli::Cli(RandomGenerator &keyGenerator, const SCryptSettings &scryptSettings, shared_ptr<Console> console):
             _keyGenerator(keyGenerator), _scryptSettings(scryptSettings), _console(), _noninteractive(false), _idleUnmounter(none), _device(none) {
-//        _noninteractive = Environment::isNoninteractive();
+        _noninteractive = Environment::isNoninteractive();
         if (_noninteractive) {
-//            _console = make_shared<NoninteractiveConsole>(console);
+            _console = make_shared<NoninteractiveConsole>(console);
         } else {
-//            _console = console;
+            _console = console;
         }
     }
 
@@ -259,9 +260,8 @@ namespace cryfs_cli {
 
     void Cli::_runFilesystem(const ProgramOptions &options, std::function<void()> onMounted) {
         try {
-            auto a = bf::path();
-            LocalStateDir localStateDir(a);
-            auto blockStore = make_unique_ref<OnDiskBlockStore2>(options.baseDir());
+            LocalStateDir localStateDir(Environment::localStateDir());
+            auto blockStore = make_unique_ref<EdsBlockStore>(options.baseDir().string());
             auto config = _loadOrCreateConfig(options, localStateDir);
             printConfig(config.oldConfig, *config.configFile->config());
             unique_ptr<Fuse> fuse = nullptr;
@@ -452,7 +452,7 @@ namespace cryfs_cli {
         try {
 //            _showVersion(std::move(httpClient));
             ProgramOptions options = program_options::Parser(argc, argv).parse(CryCiphers::supportedCipherNames());
-            _sanityChecks(options);
+//            _sanityChecks(options);
             _runFilesystem(options, std::move(onMounted));
         } catch (const CryfsException &e) {
             if (e.what() != string()) {

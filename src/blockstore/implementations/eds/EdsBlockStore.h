@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MESSMER_BLOCKSTORE_IMPLEMENTATIONS_ONDISK_ONDISKBLOCKSTORE2_H_
-#define MESSMER_BLOCKSTORE_IMPLEMENTATIONS_ONDISK_ONDISKBLOCKSTORE2_H_
+#ifndef MESSMER_BLOCKSTORE_IMPLEMENTATIONS_EDS_ONDISKBLOCKSTORE_H_
+#define MESSMER_BLOCKSTORE_IMPLEMENTATIONS_EDS_ONDISKBLOCKSTORE_H_
 
 #include "../../interface/BlockStore2.h"
 #include <cpp-utils/macros.h>
@@ -12,7 +12,7 @@ namespace eds {
 
 class EdsBlockStore final: public BlockStore2 {
 public:
-  EdsBlockStore();
+  EdsBlockStore(std::string path);
 
   bool tryCreate(const BlockId &blockId, const cpputils::Data &data) override;
   bool remove(const BlockId &blockId) override;

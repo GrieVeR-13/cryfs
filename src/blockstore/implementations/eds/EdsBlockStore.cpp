@@ -8,7 +8,7 @@ using cpputils::Data;
 namespace blockstore {
 namespace eds {
 
-EdsBlockStore::EdsBlockStore()
+EdsBlockStore::EdsBlockStore(std::string path)
 {
 
 }

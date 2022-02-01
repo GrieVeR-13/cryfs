@@ -1,6 +1,6 @@
 #include "Environment.h"
 #include <cstdlib>
-#include <cpp-utils/system/homedir.h>
+//#include <cpp-utils/system/homedir.h>
 #include <boost/filesystem.hpp>
 
 using std::string;
@@ -13,8 +13,9 @@ namespace cryfs_cli {
     const string Environment::LOCALSTATEDIR_KEY = "CRYFS_LOCAL_STATE_DIR";
 
     bool Environment::isNoninteractive() {
-        char *frontend = std::getenv(FRONTEND_KEY.c_str());
-        return frontend != nullptr && frontend == FRONTEND_NONINTERACTIVE;
+//        char *frontend = std::getenv(FRONTEND_KEY.c_str());
+//        return frontend != nullptr && frontend == FRONTEND_NONINTERACTIVE;
+        return false;
     }
 
     bool Environment::noUpdateCheck() {
@@ -22,17 +23,18 @@ namespace cryfs_cli {
     }
 
     const bf::path& Environment::defaultLocalStateDir() {
-        static const bf::path value = cpputils::system::HomeDirectory::getXDGDataDir() / "cryfs";
+//        static const bf::path value = cpputils::system::HomeDirectory::getXDGDataDir() / "cryfs";
+        static const bf::path value = "/storage/emulated/0/cryfs"; //todoe
         return value;
     }
 
     bf::path Environment::localStateDir() {
-        const char* localStateDir = std::getenv(LOCALSTATEDIR_KEY.c_str());
+//        const char* localStateDir = std::getenv(LOCALSTATEDIR_KEY.c_str());
 
-        if (nullptr == localStateDir) {
+//        if (nullptr == localStateDir) {
             return defaultLocalStateDir();
-        }
-
-        return bf::absolute(localStateDir);
+//        }
+//
+//        return bf::absolute(localStateDir);
     }
 }
