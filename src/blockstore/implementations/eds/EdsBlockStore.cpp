@@ -2,9 +2,11 @@
 #include <log.h>
 #include <filesystem/FileSystemNative.h>
 #include <pathresolver/PathResolverNative.h>
+#include <pathresolver/FsAndObjectNative.h>
 #include <pathresolver/PathResolverProviderNative.h>
 #include <util.h>
 #include <filesystem/FsObjectNative.h>
+#include <Exception.h>
 
 using std::string;
 using boost::optional;
@@ -14,15 +16,17 @@ using cpputils::Data;
 namespace blockstore {
     namespace eds {
 
-        EdsBlockStore::EdsBlockStore(const boost::filesystem::path &path) :
-                _rootDir(path) {
-
+        EdsBlockStore::EdsBlockStore(const boost::filesystem::path &path) {
             PathResolverProviderNative pathResolverProviderNative;
             auto pathResolver = pathResolverProviderNative.getPathResolver();
-            auto fsAndObject = pathResolver.resolvePathToFsAndObject(path.string());
+            auto fsAndObject = FsAndObjectNative::resolvePathToFsAndObject(pathResolver, path.string());
+            auto fsObject = fsAndObject.getFsObject();
+            if (fsObject == nullptr)
+                throw Exception();
             fileSystem = fsAndObject.getFileSystem();
-            rootGroupId = fsAndObject.getFsObject()->getId();
+            rootGroupId = fsObject->getId();
         }
+
 
         const string EdsBlockStore::FORMAT_VERSION_HEADER_PREFIX = "cryfs;block;";
         const string EdsBlockStore::FORMAT_VERSION_HEADER = EdsBlockStore::FORMAT_VERSION_HEADER_PREFIX + "0";
@@ -34,7 +38,8 @@ namespace blockstore {
 
         std::pair<std::string, std::string> EdsBlockStore::getGroupAndFileNames(const BlockId &blockId) const {
             std::string blockIdStr = blockId.ToString();
-            return std::pair<std::string, std::string>(blockIdStr.substr(0, PREFIX_LENGTH), blockIdStr.substr(PREFIX_LENGTH));
+            return std::pair<std::string, std::string>(blockIdStr.substr(0, PREFIX_LENGTH),
+                                                       blockIdStr.substr(PREFIX_LENGTH));
         }
 
 //        Data EdsBlockStore::_checkAndRemoveHeader(const Data &data) {
@@ -62,7 +67,6 @@ namespace blockstore {
         unsigned int EdsBlockStore::formatVersionHeaderSize() {
             return FORMAT_VERSION_HEADER.size() + 1; // +1 because of the null byte
         }
-
 
 
         bool EdsBlockStore::tryCreate(const BlockId &blockId, const Data &data) {
@@ -106,7 +110,7 @@ namespace blockstore {
             auto groupAndFileNames = getGroupAndFileNames(blockId);
 
             fileSystem->newGroup(groupAndFileNames.first, rootGroupId);
-//            fileContent.StoreToFile(groupAndFileNames);
+            fileContent.StoreToFile(groupAndFileNames);
         }
 
         uint64_t EdsBlockStore::numBlocks() const {
@@ -161,5 +165,8 @@ namespace blockstore {
 //            }
         }
 
+
     }
 }
+
+#pragma clang diagnostic pop

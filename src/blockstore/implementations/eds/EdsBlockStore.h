@@ -1,12 +1,13 @@
 #pragma once
-#ifndef BLOCKSTORE_IMPLEMENTATIONS_EDS_ONDISKBLOCKSTORE_H_
-#define BLOCKSTORE_IMPLEMENTATIONS_EDS_ONDISKBLOCKSTORE_H_
+#ifndef BLOCKSTORE_IMPLEMENTATIONS_EDS3_H_
+#define BLOCKSTORE_IMPLEMENTATIONS_EDS3_H_
 
 #include "../../interface/BlockStore2.h"
 #include <cpp-utils/macros.h>
 #include <cpp-utils/pointer/unique_ref.h>
 #include <cpp-utils/logging/logging.h>
 #include <pathresolver/PathResolverNative.h>
+#include <filesystem/FileSystemNative.h>
 
 namespace blockstore {
     namespace eds {
@@ -32,15 +33,16 @@ namespace blockstore {
             void forEachBlock(std::function<void(const BlockId &)> callback) const override;
 
         private:
-            boost::filesystem::path _rootDir;
-            std::string rootGroupId;
+            std::shared_ptr<FileSystemNative> fileSystem = nullptr;
 
-            std::shared_ptr<FileSystemNative>  fileSystem;
+            std::string rootGroupId;
 
             static const std::string FORMAT_VERSION_HEADER_PREFIX;
             static const std::string FORMAT_VERSION_HEADER;
+
 //
             std::pair<std::string, std::string> getGroupAndFileNames(const BlockId &blockId) const;
+
 //            static cpputils::Data _checkAndRemoveHeader(const cpputils::Data &data);
 //            static bool _isAcceptedCryfsHeader(const cpputils::Data &data);
 //            static bool _isOtherCryfsHeader(const cpputils::Data &data);
