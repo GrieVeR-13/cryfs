@@ -29,6 +29,8 @@
 #include "Environment.h"
 #include <cryfs/impl/CryfsException.h>
 #include <cpp-utils/thread/debugging.h>
+#include <pathresolver/PathResolverProviderNative.h>
+#include <util.h>
 
 //TODO Many functions accessing the ProgramOptions object. Factor out into class that stores it as a member.
 //TODO Factor out class handling askPassword
@@ -261,6 +263,7 @@ namespace cryfs_cli {
     void Cli::_runFilesystem(const ProgramOptions &options, std::function<void()> onMounted) {
         try {
             LocalStateDir localStateDir(Environment::localStateDir());
+
             auto blockStore = make_unique_ref<EdsBlockStore>(options.baseDir().string());
             auto config = _loadOrCreateConfig(options, localStateDir);
             printConfig(config.oldConfig, *config.configFile->config());

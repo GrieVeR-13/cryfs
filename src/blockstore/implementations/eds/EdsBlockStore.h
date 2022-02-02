@@ -6,6 +6,7 @@
 #include <cpp-utils/macros.h>
 #include <cpp-utils/pointer/unique_ref.h>
 #include <cpp-utils/logging/logging.h>
+#include <pathresolver/PathResolverNative.h>
 
 namespace blockstore {
     namespace eds {
@@ -31,13 +32,15 @@ namespace blockstore {
             void forEachBlock(std::function<void(const BlockId &)> callback) const override;
 
         private:
-
             boost::filesystem::path _rootDir;
+            std::string rootGroupId;
+
+            std::shared_ptr<FileSystemNative>  fileSystem;
 
             static const std::string FORMAT_VERSION_HEADER_PREFIX;
             static const std::string FORMAT_VERSION_HEADER;
 //
-            boost::filesystem::path _getFilepath(const BlockId &blockId) const;
+            std::pair<std::string, std::string> getGroupAndFileNames(const BlockId &blockId) const;
 //            static cpputils::Data _checkAndRemoveHeader(const cpputils::Data &data);
 //            static bool _isAcceptedCryfsHeader(const cpputils::Data &data);
 //            static bool _isOtherCryfsHeader(const cpputils::Data &data);

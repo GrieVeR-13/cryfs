@@ -2,6 +2,9 @@
 #include <log.h>
 #include <filesystem/FileSystemNative.h>
 #include <pathresolver/PathResolverNative.h>
+#include <pathresolver/PathResolverProviderNative.h>
+#include <util.h>
+#include <filesystem/FsObjectNative.h>
 
 using std::string;
 using boost::optional;
@@ -11,6 +14,16 @@ using cpputils::Data;
 namespace blockstore {
     namespace eds {
 
+        EdsBlockStore::EdsBlockStore(const boost::filesystem::path &path) :
+                _rootDir(path) {
+
+            PathResolverProviderNative pathResolverProviderNative;
+            auto pathResolver = pathResolverProviderNative.getPathResolver();
+            auto fsAndObject = pathResolver.resolvePathToFsAndObject(path.string());
+            fileSystem = fsAndObject.getFileSystem();
+            rootGroupId = fsAndObject.getFsObject()->getId();
+        }
+
         const string EdsBlockStore::FORMAT_VERSION_HEADER_PREFIX = "cryfs;block;";
         const string EdsBlockStore::FORMAT_VERSION_HEADER = EdsBlockStore::FORMAT_VERSION_HEADER_PREFIX + "0";
         namespace {
@@ -19,9 +32,9 @@ namespace blockstore {
 //            constexpr const char *ALLOWED_BLOCKID_CHARACTERS = "0123456789ABCDEF";
         }
 
-        boost::filesystem::path EdsBlockStore::_getFilepath(const BlockId &blockId) const {
+        std::pair<std::string, std::string> EdsBlockStore::getGroupAndFileNames(const BlockId &blockId) const {
             std::string blockIdStr = blockId.ToString();
-            return _rootDir / blockIdStr.substr(0, PREFIX_LENGTH) / blockIdStr.substr(PREFIX_LENGTH);
+            return std::pair<std::string, std::string>(blockIdStr.substr(0, PREFIX_LENGTH), blockIdStr.substr(PREFIX_LENGTH));
         }
 
 //        Data EdsBlockStore::_checkAndRemoveHeader(const Data &data) {
@@ -50,13 +63,10 @@ namespace blockstore {
             return FORMAT_VERSION_HEADER.size() + 1; // +1 because of the null byte
         }
 
-        EdsBlockStore::EdsBlockStore(const boost::filesystem::path &path)
-                : _rootDir(path) {
 
-        }
 
         bool EdsBlockStore::tryCreate(const BlockId &blockId, const Data &data) {
-            auto filepath = _getFilepath(blockId);
+            auto filepath = getGroupAndFileNames(blockId);
 //            if (boost::filesystem::exists(filepath)) {
 //                return false; //todoe
 //            }
@@ -66,7 +76,7 @@ namespace blockstore {
         }
 
         bool EdsBlockStore::remove(const BlockId &blockId) {
-            auto filepath = _getFilepath(blockId);
+            auto filepath = getGroupAndFileNames(blockId);
 //            if (!boost::filesystem::is_regular_file(filepath)) { // TODO Is this branch necessary?
 //                return false;
 //            }
@@ -82,7 +92,7 @@ namespace blockstore {
         }
 
         optional<Data> EdsBlockStore::load(const BlockId &blockId) const {
-            auto fileContent = Data::LoadFromFile(_getFilepath(blockId));
+//            auto fileContent = Data::LoadFromFile(getGroupAndFileNames(blockId));
 //            if (fileContent == none) {
 //                return boost::none;
 //            }
@@ -93,10 +103,10 @@ namespace blockstore {
             Data fileContent(formatVersionHeaderSize() + data.size());
             std::memcpy(fileContent.data(), FORMAT_VERSION_HEADER.c_str(), formatVersionHeaderSize());
             std::memcpy(fileContent.dataOffset(formatVersionHeaderSize()), data.data(), data.size());
-            auto filepath = _getFilepath(blockId);
-//            boost::filesystem::create_directory( //todoe
-//                    filepath.parent_path()); // TODO Instead create all of them once at fs creation time?
-            fileContent.StoreToFile(filepath);
+            auto groupAndFileNames = getGroupAndFileNames(blockId);
+
+            fileSystem->newGroup(groupAndFileNames.first, rootGroupId);
+//            fileContent.StoreToFile(groupAndFileNames);
         }
 
         uint64_t EdsBlockStore::numBlocks() const {
