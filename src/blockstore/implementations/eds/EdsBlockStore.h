@@ -8,13 +8,14 @@
 #include <cpp-utils/logging/logging.h>
 #include <pathresolver/PathResolverNative.h>
 #include <filesystem/FileSystemNative.h>
+#include <filesystem/PathnameFileSystemNative.h>
 
 namespace blockstore {
     namespace eds {
 
         class EdsBlockStore final : public BlockStore2 {
         public:
-            EdsBlockStore(jobject pathnameFileSystem, const boost::filesystem::path &path);
+            EdsBlockStore(jobject pathnameFileSystem, const boost::filesystem::path& path);
 
             bool tryCreate(const BlockId &blockId, const cpputils::Data &data) override;
 
@@ -33,20 +34,18 @@ namespace blockstore {
             void forEachBlock(std::function<void(const BlockId &)> callback) const override;
 
         private:
-            jobject pathnameFileSystem;
-            std::shared_ptr<FileSystemNative> fileSystem = nullptr;
+            PathnameFileSystemNative pathnameFileSystem;
 
-            std::string rootGroupId;
+            boost::filesystem::path _rootDir;
 
             static const std::string FORMAT_VERSION_HEADER_PREFIX;
             static const std::string FORMAT_VERSION_HEADER;
 
-//
-            std::pair<std::string, std::string> getGroupAndFileNames(const BlockId &blockId) const;
+            boost::filesystem::path _getFilepath(const BlockId &blockId) const;
 
-//            static cpputils::Data _checkAndRemoveHeader(const cpputils::Data &data);
-//            static bool _isAcceptedCryfsHeader(const cpputils::Data &data);
-//            static bool _isOtherCryfsHeader(const cpputils::Data &data);
+            static cpputils::Data _checkAndRemoveHeader(const cpputils::Data &data);
+            static bool _isAcceptedCryfsHeader(const cpputils::Data &data);
+            static bool _isOtherCryfsHeader(const cpputils::Data &data);
             static unsigned int formatVersionHeaderSize();
 
             DISALLOW_COPY_AND_ASSIGN(EdsBlockStore);
