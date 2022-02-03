@@ -264,7 +264,7 @@ namespace cryfs_cli {
         try {
             LocalStateDir localStateDir(Environment::localStateDir());
 
-            auto blockStore = make_unique_ref<EdsBlockStore>(options.baseDir().string());
+            auto blockStore = make_unique_ref<EdsBlockStore>(nullptr, options.baseDir().string()); //todoe
             auto config = _loadOrCreateConfig(options, localStateDir);
             printConfig(config.oldConfig, *config.configFile->config());
             unique_ptr<Fuse> fuse = nullptr;
@@ -291,15 +291,15 @@ namespace cryfs_cli {
                 ASSERT(_device != none, "File system not ready to be initialized. Was it already initialized before?");
 
                 //TODO Test auto unmounting after idle timeout
-                const boost::optional<double> idle_minutes = options.unmountAfterIdleMinutes();
-                _idleUnmounter = _createIdleCallback(idle_minutes, [fs, idle_minutes] {
-                    LOG(INFO, "Unmounting because file system was idle for {} minutes", *idle_minutes);
+//                const boost::optional<double> idle_minutes = options.unmountAfterIdleMinutes();
+//                _idleUnmounter = _createIdleCallback(idle_minutes, [fs, idle_minutes] {
+//                    LOG(INFO, "Unmounting because file system was idle for {} minutes", *idle_minutes);
 //                    fs->stop();
-                });
-                if (_idleUnmounter != none) {
-                    (*_device)->onFsAction(std::bind(&CallAfterTimeout::resetTimer, _idleUnmounter->get()));
-                }
-
+//                });
+//                if (_idleUnmounter != none) {
+//                    (*_device)->onFsAction(std::bind(&CallAfterTimeout::resetTimer, _idleUnmounter->get()));
+//                }
+                make_shared<fspp::FilesystemImpl>(std::move(*_device))->closeFile(0);
                 return make_shared<fspp::FilesystemImpl>(std::move(*_device));
             };
 

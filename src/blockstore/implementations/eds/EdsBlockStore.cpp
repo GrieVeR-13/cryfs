@@ -16,7 +16,8 @@ using cpputils::Data;
 namespace blockstore {
     namespace eds {
 
-        EdsBlockStore::EdsBlockStore(const boost::filesystem::path &path) {
+        EdsBlockStore::EdsBlockStore(jobject pathnameFileSystem, const boost::filesystem::path &path) :
+                pathnameFileSystem(pathnameFileSystem) {
             auto pathResolver = PathResolverProviderNative::getInstance().getPathResolver();
             auto fsAndObject = FsAndObjectNative::resolvePathToFsAndObject(pathResolver, path.string());
             auto fsObject = fsAndObject.getFsObject();
