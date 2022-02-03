@@ -64,6 +64,9 @@ public:
   //TODO Test LoadFromStream/StoreToStream
   static Data LoadFromStream(std::istream &stream);
   static Data LoadFromStream(std::istream &stream, size_t size);
+
+  static Data LoadFromStream2(std::istream &stream, size_t size);
+
   void StoreToStream(std::ostream &stream) const;
 
   // TODO Unify ToString/FromString functions from Data/FixedSizeData using free functions
@@ -173,6 +176,7 @@ inline Data &&Data::FillWithZeroes() && {
 }
 
 inline void Data::StoreToFile(const boost::filesystem::path &filepath) const {
+
   std::ofstream file(filepath.string().c_str(), std::ios::binary | std::ios::trunc);
   if (!file.good()) {
     throw std::runtime_error("Could not open file for writing");

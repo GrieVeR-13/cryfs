@@ -1,6 +1,8 @@
 #include "Data.h"
 #include <stdexcept>
 #include <vendor_cryptopp/hex.h>
+#include <pathresolver/PathResolverProviderNative.h>
+#include <pathresolver/FsAndObjectNative.h>
 
 using std::istream;
 using std::ofstream;
@@ -13,6 +15,16 @@ namespace bf = boost::filesystem;
 namespace cpputils {
 
 optional<Data> Data::LoadFromFile(const bf::path &filepath) {
+
+  auto pathResolver = PathResolverProviderNative::getInstance().getPathResolver();
+  auto fsAndObject = FsAndObjectNative::resolvePathToFsAndObject(pathResolver, filepath.string());
+  auto fsObject = fsAndObject.getFsObject();
+  if (fsObject == nullptr) {
+    throw std::runtime_error("Error reading from file");
+  }
+
+  auto reader = fsAndObject.getFileSystem()->openRandomAccessReader(fsObject)
+
   ifstream file(filepath.string().c_str(), ios::binary);
   if (!file.good()) {
     return boost::none;
@@ -38,6 +50,12 @@ std::streampos Data::_getStreamSize(istream &stream) {
 }
 
 Data Data::LoadFromStream(istream &stream, size_t size) {
+  Data result(size);
+  stream.read(static_cast<char*>(result.data()), result.size());
+  return result;
+}
+
+Data Data::LoadFromStream2(istream &stream, size_t size) {
   Data result(size);
   stream.read(static_cast<char*>(result.data()), result.size());
   return result;

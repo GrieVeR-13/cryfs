@@ -17,14 +17,14 @@ namespace blockstore {
     namespace eds {
 
         EdsBlockStore::EdsBlockStore(const boost::filesystem::path &path) {
-            PathResolverProviderNative pathResolverProviderNative;
-            auto pathResolver = pathResolverProviderNative.getPathResolver();
+            auto pathResolver = PathResolverProviderNative::getInstance().getPathResolver();
             auto fsAndObject = FsAndObjectNative::resolvePathToFsAndObject(pathResolver, path.string());
             auto fsObject = fsAndObject.getFsObject();
             if (fsObject == nullptr)
                 throw Exception();
             fileSystem = fsAndObject.getFileSystem();
-            rootGroupId = fsObject->getId();
+            FsObjectNative fsObjectNative(fsObject);
+            rootGroupId = fsObjectNative.getId();
         }
 
 
@@ -109,7 +109,14 @@ namespace blockstore {
             std::memcpy(fileContent.dataOffset(formatVersionHeaderSize()), data.data(), data.size());
             auto groupAndFileNames = getGroupAndFileNames(blockId);
 
-            fileSystem->newGroup(groupAndFileNames.first, rootGroupId);
+            auto groupObject = fileSystem->newGroup(groupAndFileNames.first, rootGroupId);
+            FsObjectNative group(groupObject);
+
+            auto fileObject = fileSystem->getOrNewFile(groupAndFileNames.second, group.getId());
+            auto pathResolver = PathResolverProviderNative::getInstance().getPathResolver();
+            auto fsAndObject = FsAndObjectNative::resolvePathToFsAndObject(pathResolver, path.string());
+
+
             fileContent.StoreToFile(groupAndFileNames);
         }
 
