@@ -114,10 +114,10 @@ namespace blockstore {
 
             auto fileObject = fileSystem->getOrNewFile(groupAndFileNames.second, group.getId());
             auto pathResolver = PathResolverProviderNative::getInstance().getPathResolver();
-            auto fsAndObject = FsAndObjectNative::resolvePathToFsAndObject(pathResolver, path.string());
+//            auto fsAndObject = FsAndObjectNative::resolvePathToFsAndObject(pathResolver, path.string());
 
 
-            fileContent.StoreToFile(groupAndFileNames);
+//            fileContent.StoreToFile(groupAndFileNames);
         }
 
         uint64_t EdsBlockStore::numBlocks() const {

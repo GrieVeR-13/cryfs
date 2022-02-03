@@ -16,14 +16,14 @@ namespace cpputils {
 
 optional<Data> Data::LoadFromFile(const bf::path &filepath) {
 
-  auto pathResolver = PathResolverProviderNative::getInstance().getPathResolver();
-  auto fsAndObject = FsAndObjectNative::resolvePathToFsAndObject(pathResolver, filepath.string());
-  auto fsObject = fsAndObject.getFsObject();
-  if (fsObject == nullptr) {
-    throw std::runtime_error("Error reading from file");
-  }
-
-  auto reader = fsAndObject.getFileSystem()->openRandomAccessReader(fsObject)
+//  auto pathResolver = PathResolverProviderNative::getInstance().getPathResolver();
+//  auto fsAndObject = FsAndObjectNative::resolvePathToFsAndObject(pathResolver, filepath.string());
+//  auto fsObject = fsAndObject.getFsObject();
+//  if (fsObject == nullptr) {
+//    throw std::runtime_error("Error reading from file");
+//  }
+//
+//  auto reader = fsAndObject.getFileSystem()->openRandomAccessReader(fsObject)
 
   ifstream file(filepath.string().c_str(), ios::binary);
   if (!file.good()) {
