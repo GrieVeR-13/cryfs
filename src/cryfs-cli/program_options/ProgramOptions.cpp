@@ -2,6 +2,7 @@
 #include <cstring>
 #include <cpp-utils/assert/assert.h>
 #include <cpp-utils/system/path.h>
+#include <cpp-utils/data/FsAndPath.h>
 
 using namespace cryfs_cli::program_options;
 using std::string;
@@ -9,7 +10,7 @@ using std::vector;
 using boost::optional;
 namespace bf = boost::filesystem;
 
-ProgramOptions::ProgramOptions(bf::path baseDir, bf::path mountDir, optional<bf::path> configFile,
+ProgramOptions::ProgramOptions(cpputils::FsAndPath baseDir, bf::path mountDir, optional<cpputils::FsAndPath> configFile,
                                bool foreground, bool allowFilesystemUpgrade, bool allowReplacedFilesystem, 
                                bool createMissingBasedir, bool createMissingMountpoint,
                                optional<double> unmountAfterIdleMinutes,
@@ -18,7 +19,7 @@ ProgramOptions::ProgramOptions(bf::path baseDir, bf::path mountDir, optional<bf:
                                bool allowIntegrityViolations,
                                boost::optional<bool> missingBlockIsIntegrityViolation,
                                vector<string> fuseOptions)
-    : _baseDir(bf::absolute(std::move(baseDir))), _mountDir(std::move(mountDir)), _configFile(std::move(configFile)),
+    : _baseDir(/*bf::absolute(*/std::move(baseDir))/*)*/, _mountDir(std::move(mountDir)), _configFile(std::move(configFile)),
 	  _foreground(foreground),
 	  _allowFilesystemUpgrade(allowFilesystemUpgrade), _allowReplacedFilesystem(allowReplacedFilesystem),
       _createMissingBasedir(createMissingBasedir), _createMissingMountpoint(createMissingMountpoint),
@@ -33,7 +34,7 @@ ProgramOptions::ProgramOptions(bf::path baseDir, bf::path mountDir, optional<bf:
 	}
 }
 
-const bf::path &ProgramOptions::baseDir() const {
+const cpputils::FsAndPath &ProgramOptions::baseDir() const {
     return _baseDir;
 }
 
@@ -45,7 +46,7 @@ bool ProgramOptions::mountDirIsDriveLetter() const {
 	return _mountDirIsDriveLetter;
 }
 
-const optional<bf::path> &ProgramOptions::configFile() const {
+const optional<cpputils::FsAndPath> &ProgramOptions::configFile() const {
     return _configFile;
 }
 

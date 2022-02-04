@@ -22,11 +22,11 @@ namespace cryfs {
 
 namespace {
 
-ptree _load(const bf::path &metadataFilePath) {
+ptree _load(const cpputils::FsAndPath &metadataFilePath) {
 	try {
 		ptree result;
 
-		ifstream file(metadataFilePath.string());
+		ifstream file(metadataFilePath.getPath().string()); //todoe stream
 		if (file.good()) {
 			read_json(file, result);
 		}
@@ -39,18 +39,18 @@ ptree _load(const bf::path &metadataFilePath) {
 	}
 }
 
-void _save(const bf::path &metadataFilePath, const ptree& data) {
-  ofstream file(metadataFilePath.string(), std::ios::trunc);
+void _save(const cpputils::FsAndPath &metadataFilePath, const ptree& data) {
+  ofstream file(metadataFilePath.getPath().string(), std::ios::trunc);
   write_json(file, data);
 }
 
-string jsonPathForBasedir(const bf::path &basedir) {
-  return bf::canonical(basedir).string() + ".filesystemId";
+string jsonPathForBasedir(const cpputils::FsAndPath &basedir) {
+  return bf::canonical(basedir.getPath()).string() + ".filesystemId"; //todoe
 }
 
 }
 
-BasedirMetadata::BasedirMetadata(ptree data, bf::path filename)
+BasedirMetadata::BasedirMetadata(ptree data, cpputils::FsAndPath filename)
   :_filename(std::move(filename)), _data(std::move(data)) {}
 
 BasedirMetadata BasedirMetadata::load(const LocalStateDir& localStateDir) {
@@ -63,7 +63,7 @@ void BasedirMetadata::save() {
   _save(_filename, _data);
 }
 
-bool BasedirMetadata::filesystemIdForBasedirIsCorrect(const bf::path &basedir, const CryConfig::FilesystemID &filesystemId) const {
+bool BasedirMetadata::filesystemIdForBasedirIsCorrect(const cpputils::FsAndPath &basedir, const CryConfig::FilesystemID &filesystemId) const {
   auto entry = _data.get_optional<string>(jsonPathForBasedir(basedir));
   if (entry == boost::none) {
     return true; // Basedir not known in local state yet.
@@ -72,7 +72,7 @@ bool BasedirMetadata::filesystemIdForBasedirIsCorrect(const bf::path &basedir, c
   return filesystemIdFromState == filesystemId;
 }
 
-BasedirMetadata& BasedirMetadata::updateFilesystemIdForBasedir(const bf::path &basedir, const CryConfig::FilesystemID &filesystemId) {
+BasedirMetadata& BasedirMetadata::updateFilesystemIdForBasedir(const cpputils::FsAndPath &basedir, const CryConfig::FilesystemID &filesystemId) {
   _data.put<string>(jsonPathForBasedir(basedir), filesystemId.ToString());
   return *this;
 }

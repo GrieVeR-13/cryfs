@@ -15,7 +15,7 @@ namespace blockstore {
 
         class EdsBlockStore final : public BlockStore2 {
         public:
-            EdsBlockStore(jobject pathnameFileSystem, const boost::filesystem::path& path);
+            EdsBlockStore(const cpputils::FsAndPath& path);
 
             bool tryCreate(const BlockId &blockId, const cpputils::Data &data) override;
 
@@ -34,7 +34,7 @@ namespace blockstore {
             void forEachBlock(std::function<void(const BlockId &)> callback) const override;
 
         private:
-            PathnameFileSystemNative pathnameFileSystem;
+            std::shared_ptr<PathnameFileSystemNative> pathnameFileSystemNative;
 
             boost::filesystem::path _rootDir;
 

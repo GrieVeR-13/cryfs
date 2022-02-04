@@ -32,7 +32,7 @@ vector<string> Parser::_argsToVector(int argc, const char **argv) {
     return result;
 }
 
-ProgramOptions Parser::parse(const vector<string> &supportedCiphers) const {
+ProgramOptions Parser::parse(std::shared_ptr<cpputils::DataFileSystem> dataFileSystem, const vector<string> &supportedCiphers) const {
     vector<string> cryfsOptions;
     vector<string> fuseOptions;
     std::tie(cryfsOptions, fuseOptions) = splitAtDoubleDash(_options);
@@ -49,11 +49,11 @@ ProgramOptions Parser::parse(const vector<string> &supportedCiphers) const {
     if (!vm.count("mount-dir")) {
         _showHelpAndExit("Please specify a mount directory.", ErrorCode::InvalidArguments);
     }
-    bf::path baseDir = vm["base-dir"].as<string>();
+    cpputils::FsAndPath baseDir = cpputils::FsAndPath(dataFileSystem, vm["base-dir"].as<string>());
     bf::path mountDir = vm["mount-dir"].as<string>();
-    optional<bf::path> configfile = none;
+    optional<cpputils::FsAndPath> configfile = none;
     if (vm.count("config")) {
-        configfile = bf::absolute(vm["config"].as<string>());
+        configfile = cpputils::FsAndPath(dataFileSystem, vm["config"].as<string>());
     }
     bool foreground = vm.count("foreground");
     bool allowFilesystemUpgrade = vm.count("allow-filesystem-upgrade");

@@ -12,7 +12,7 @@ namespace cryfs_cli {
         public:
             Parser(int argc, const char **argv);
 
-            ProgramOptions parse(const std::vector<std::string> &supportedCiphers) const;
+            ProgramOptions parse(std::shared_ptr<cpputils::DataFileSystem> dataFileSystem, const std::vector<std::string> &supportedCiphers) const;
 
         private:
             static std::vector<std::string> _argsToVector(int argc, const char **argv);

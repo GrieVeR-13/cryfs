@@ -7,13 +7,14 @@
 #include <boost/optional.hpp>
 #include <cpp-utils/macros.h>
 #include <boost/filesystem.hpp>
+#include <cpp-utils/data/FsAndPath.h>
 
 namespace cryfs_cli {
     namespace program_options {
         class ProgramOptions final {
         public:
-            ProgramOptions(boost::filesystem::path baseDir, boost::filesystem::path mountDir,
-                           boost::optional<boost::filesystem::path> configFile,
+            ProgramOptions(cpputils::FsAndPath baseDir, boost::filesystem::path mountDir,
+                           boost::optional<cpputils::FsAndPath> configFile,
                            bool foreground, bool allowFilesystemUpgrade, bool allowReplacedFilesystem,
                            bool createMissingBasedir, bool createMissingMountpoint,
                            boost::optional<double> unmountAfterIdleMinutes,
@@ -25,9 +26,9 @@ namespace cryfs_cli {
                            std::vector<std::string> fuseOptions);
             ProgramOptions(ProgramOptions &&rhs) = default;
 
-            const boost::filesystem::path &baseDir() const;
+            const cpputils::FsAndPath &baseDir() const;
             const boost::filesystem::path &mountDir() const;
-            const boost::optional<boost::filesystem::path> &configFile() const;
+            const boost::optional<cpputils::FsAndPath> &configFile() const;
             bool foreground() const;
             bool allowFilesystemUpgrade() const;
             bool allowReplacedFilesystem() const;
@@ -43,9 +44,9 @@ namespace cryfs_cli {
 			bool mountDirIsDriveLetter() const;
 
         private:
-            boost::filesystem::path _baseDir; // this is always absolute
+			cpputils::FsAndPath _baseDir; // this is always absolute
             boost::filesystem::path _mountDir; // this is absolute iff !_mountDirIsDriveLetter
-			boost::optional<boost::filesystem::path> _configFile;
+			boost::optional<cpputils::FsAndPath> _configFile;
             bool _foreground;
             bool _allowFilesystemUpgrade;
             bool _allowReplacedFilesystem;

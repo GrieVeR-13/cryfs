@@ -2,6 +2,7 @@
 #include <cstdlib>
 //#include <cpp-utils/system/homedir.h>
 #include <boost/filesystem.hpp>
+#include <cpp-utils/data/FsAndPath.h>
 
 using std::string;
 namespace bf = boost::filesystem;
@@ -22,13 +23,13 @@ namespace cryfs_cli {
         return nullptr != std::getenv(NOUPDATECHECK_KEY.c_str());
     }
 
-    const bf::path& Environment::defaultLocalStateDir() {
+    const cpputils::FsAndPath& Environment::defaultLocalStateDir() {
 //        static const bf::path value = cpputils::system::HomeDirectory::getXDGDataDir() / "cryfs";
-        static const bf::path value = "/storage/emulated/0/cryfs"; //todoe
-        return value;
+//        static const bf::path value = "/storage/emulated/0/cryfs"; //todoe
+//        return value;
     }
 
-    bf::path Environment::localStateDir() {
+    cpputils::FsAndPath Environment::localStateDir() {
 //        const char* localStateDir = std::getenv(LOCALSTATEDIR_KEY.c_str());
 
 //        if (nullptr == localStateDir) {

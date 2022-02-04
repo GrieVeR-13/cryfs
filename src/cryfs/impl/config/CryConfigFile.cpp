@@ -25,7 +25,7 @@ CryConfigFile::~CryConfigFile() {
     //We do not call save() here, because we do not want the config file to be re-encrypted on each filesystem run
 }
 
-either<CryConfigFile::LoadError, unique_ref<CryConfigFile>> CryConfigFile::load(bf::path path, CryKeyProvider* keyProvider, Access access) {
+either<CryConfigFile::LoadError, unique_ref<CryConfigFile>> CryConfigFile::load(cpputils::FsAndPath path, CryKeyProvider* keyProvider, Access access) {
     auto encryptedConfigData = Data::LoadFromFile(path);
     if (encryptedConfigData == none) {
         return LoadError::ConfigFileNotFound;
@@ -57,8 +57,8 @@ either<CryConfigFile::LoadError, unique_ref<CryConfigFile>> CryConfigFile::load(
     #endif
 }
 
-unique_ref<CryConfigFile> CryConfigFile::create(bf::path path, CryConfig config, CryKeyProvider* keyProvider) {
-    if (bf::exists(path)) {
+unique_ref<CryConfigFile> CryConfigFile::create(cpputils::FsAndPath path, CryConfig config, CryKeyProvider* keyProvider) {
+    if (path.getDataFileSystem()->exists(path.getPath())) {
         throw std::runtime_error("Config file exists already.");
     }
     auto result = make_unique_ref<CryConfigFile>(std::move(path), std::move(config), CryConfigEncryptorFactory::deriveNewKey(keyProvider), CryConfigFile::Access::ReadWrite);
@@ -66,7 +66,7 @@ unique_ref<CryConfigFile> CryConfigFile::create(bf::path path, CryConfig config,
     return result;
 }
 
-CryConfigFile::CryConfigFile(bf::path path, CryConfig config, unique_ref<CryConfigEncryptor> encryptor, Access access)
+CryConfigFile::CryConfigFile(cpputils::FsAndPath path, CryConfig config, unique_ref<CryConfigEncryptor> encryptor, Access access)
     : _path(std::move(path)), _config(std::move(config)), _encryptor(std::move(encryptor)), _access(access) {
 }
 

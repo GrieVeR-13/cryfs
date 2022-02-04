@@ -14,7 +14,7 @@ namespace bf = boost::filesystem;
 
 namespace cpputils {
 
-optional<Data> Data::LoadFromFile(const bf::path &filepath) {
+optional<Data> Data::LoadFromFile(const FsAndPath &filepath) {
 
 //  auto pathResolver = PathResolverProviderNative::getInstance().getPathResolver();
 //  auto fsAndObject = FsAndObjectNative::resolvePathToFsAndObject(pathResolver, filepath.string());
@@ -25,15 +25,15 @@ optional<Data> Data::LoadFromFile(const bf::path &filepath) {
 //
 //  auto reader = fsAndObject.getFileSystem()->openRandomAccessReader(fsObject)
 
-  ifstream file(filepath.string().c_str(), ios::binary);
-  if (!file.good()) {
-    return boost::none;
-  }
-  optional<Data> result(LoadFromStream(file));
-  if (!file.good()) {
-    throw std::runtime_error("Error reading from file");
-  }
-  return result;
+//  ifstream file(filepath.string().c_str(), ios::binary);
+//  if (!file.good()) {
+//    return boost::none;
+//  }
+//  optional<Data> result(LoadFromStream(file));
+//  if (!file.good()) {
+//    throw std::runtime_error("Error reading from file");
+//  }
+//  return result;
 }
 
 std::streampos Data::_getStreamSize(istream &stream) {

@@ -24,12 +24,12 @@ public:
       uint32_t myClientId;
   };
 
-  cpputils::either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> loadOrCreate(boost::filesystem::path filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem);
-  cpputils::either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> load(boost::filesystem::path filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem, CryConfigFile::Access access);
+  cpputils::either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> loadOrCreate(cpputils::FsAndPath filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem);
+  cpputils::either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> load(cpputils::FsAndPath filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem, CryConfigFile::Access access);
 
 private:
-    cpputils::either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> _loadConfig(boost::filesystem::path filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem, CryConfigFile::Access access);
-    ConfigLoadResult _createConfig(boost::filesystem::path filename, bool allowReplacedFilesystem);
+    cpputils::either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> _loadConfig(cpputils::FsAndPath filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem, CryConfigFile::Access access);
+    ConfigLoadResult _createConfig(cpputils::FsAndPath filename, bool allowReplacedFilesystem);
     void _checkVersion(const CryConfig &config, bool allowFilesystemUpgrade);
     void _checkCipher(const CryConfig &config) const;
     void _checkMissingBlocksAreIntegrityViolations(CryConfigFile *configFile, uint32_t myClientId);

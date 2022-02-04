@@ -4,25 +4,25 @@
 namespace bf = boost::filesystem;
 
 namespace cryfs {
-    LocalStateDir::LocalStateDir(bf::path appDir): _appDir(std::move(appDir)) {}
+    LocalStateDir::LocalStateDir(cpputils::FsAndPath appDir): _appDir(std::move(appDir)) {}
 
-    bf::path LocalStateDir::forFilesystemId(const CryConfig::FilesystemID &filesystemId) const {
+    cpputils::FsAndPath LocalStateDir::forFilesystemId(const CryConfig::FilesystemID &filesystemId) const {
       _createDirIfNotExists(_appDir);
-      bf::path filesystems_dir = _appDir / "filesystems";
+      cpputils::FsAndPath filesystems_dir = cpputils::FsAndPath(_appDir.getDataFileSystem(), _appDir.getPath() / "filesystems");
       _createDirIfNotExists(filesystems_dir);
-      bf::path this_filesystem_dir = filesystems_dir / filesystemId.ToString();
+      cpputils::FsAndPath this_filesystem_dir = cpputils::FsAndPath(filesystems_dir.getDataFileSystem(), _appDir.getPath() / filesystemId.ToString());
       _createDirIfNotExists(this_filesystem_dir);
       return this_filesystem_dir;
     }
 
-    bf::path LocalStateDir::forBasedirMetadata() const {
+    cpputils::FsAndPath LocalStateDir::forBasedirMetadata() const {
       _createDirIfNotExists(_appDir);
-      return _appDir / "basedirs";
+      return  cpputils::FsAndPath(_appDir.getDataFileSystem(), _appDir.getPath() / "basedirs");
     }
 
-    void LocalStateDir::_createDirIfNotExists(const bf::path &path) {
-        if (!bf::exists(path)) {
-            bf::create_directories(path);
+    void LocalStateDir::_createDirIfNotExists(const cpputils::FsAndPath &path) {
+        if (!path.getDataFileSystem()->exists(path.getPath())) {
+            path.getDataFileSystem()->create_directories(path.getPath());
         }
     }
 }

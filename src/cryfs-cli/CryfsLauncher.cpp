@@ -5,12 +5,12 @@
 namespace cryfs_cli {
     namespace eds {
 
-        int openVolume(const char *groupPathname) {
+        int openVolume(jobject pathnameFileSystem, const char *groupPathname) {
             int argc = 3;
             const char *argv[] = {"cryfs", groupPathname, "/storage/emulated/0/cryfs/mountdir"};
             try {
                 auto &keyGenerator = cpputils::Random::OSRandom();
-                cryfs_cli::Cli(keyGenerator, cpputils::SCrypt::TestSettings, std::make_shared<cpputils::EdsConsole>()).main( //todoe openmp
+                cryfs_cli::Cli(keyGenerator, cpputils::SCrypt::TestSettings, std::make_shared<cpputils::EdsConsole>()).main(pathnameFileSystem, //todoe openmp
                         argc, argv, [] {});
                 return 0;
             } catch (const std::exception &e) {

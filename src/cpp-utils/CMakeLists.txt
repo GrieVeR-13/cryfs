@@ -59,7 +59,9 @@ set(SOURCES
         data/DataFixture.cpp
         data/DataUtils.cpp
         data/Data.cpp
-        data/EdsData.cpp
+        data/DataFileSystem.cpp
+        data/FsAndPath.cpp
+        data/EdsDataFileSystem.cpp
         assert/assert.cpp
 #        assert/backtrace_nonwindows.cpp
 #        assert/backtrace_windows.cpp

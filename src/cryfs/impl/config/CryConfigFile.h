@@ -26,15 +26,15 @@ namespace cryfs {
             ReadWrite,
         };
 
-        CryConfigFile(boost::filesystem::path path, CryConfig config, cpputils::unique_ref<CryConfigEncryptor> encryptor, Access access);
+        CryConfigFile(cpputils::FsAndPath path, CryConfig config, cpputils::unique_ref<CryConfigEncryptor> encryptor, Access access);
 
         CryConfigFile(CryConfigFile &&rhs) = default;
         ~CryConfigFile();
 
-        static cpputils::unique_ref<CryConfigFile> create(boost::filesystem::path path, CryConfig config, CryKeyProvider* keyProvider);
+        static cpputils::unique_ref<CryConfigFile> create(cpputils::FsAndPath path, CryConfig config, CryKeyProvider* keyProvider);
 
         enum class LoadError {ConfigFileNotFound, DecryptionFailed};
-        static cpputils::either<LoadError, cpputils::unique_ref<CryConfigFile>> load(boost::filesystem::path path, CryKeyProvider* keyProvider, Access access);
+        static cpputils::either<LoadError, cpputils::unique_ref<CryConfigFile>> load(cpputils::FsAndPath path, CryKeyProvider* keyProvider, Access access);
 
         void save() const;
 
@@ -42,7 +42,7 @@ namespace cryfs {
         const CryConfig *config() const;
 
     private:
-        boost::filesystem::path _path;
+        cpputils::FsAndPath _path;
         CryConfig _config;
         cpputils::unique_ref<CryConfigEncryptor> _encryptor;
         Access _access;

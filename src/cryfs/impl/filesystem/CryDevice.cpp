@@ -113,7 +113,7 @@ unique_ref<BlockStore2> CryDevice::CreateIntegrityEncryptedBlockStore(unique_ref
 
 #ifndef CRYFS_NO_COMPATIBILITY
   if (!configFile->config()->HasVersionNumbers()) {
-    IntegrityBlockStore2::migrateFromBlockstoreWithoutVersionNumbers(encryptedBlockStore.get(), integrityFilePath, myClientId);
+//    IntegrityBlockStore2::migrateFromBlockstoreWithoutVersionNumbers(encryptedBlockStore.get(), integrityFilePath, myClientId); //todoe
     configFile->config()->SetBlocksizeBytes(configFile->config()->BlocksizeBytes() + IntegrityBlockStore2::HEADER_LENGTH - blockstore::BlockId::BINARY_LENGTH); // Minus BlockId size because EncryptedBlockStore doesn't store the BlockId anymore (that was moved to IntegrityBlockStore)
     // Don't migrate again if it was successful
     configFile->config()->SetHasVersionNumbers(true);

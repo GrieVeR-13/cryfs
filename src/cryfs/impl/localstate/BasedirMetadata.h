@@ -19,13 +19,13 @@ public:
   BasedirMetadata(BasedirMetadata&&) = default;
   BasedirMetadata& operator=(BasedirMetadata&&) = default;
 
-  bool filesystemIdForBasedirIsCorrect(const boost::filesystem::path &basedir, const CryConfig::FilesystemID &filesystemId) const;
-  BasedirMetadata& updateFilesystemIdForBasedir(const boost::filesystem::path &basedir, const CryConfig::FilesystemID &filesystemId);
+  bool filesystemIdForBasedirIsCorrect(const cpputils::FsAndPath &basedir, const CryConfig::FilesystemID &filesystemId) const;
+  BasedirMetadata& updateFilesystemIdForBasedir(const cpputils::FsAndPath &basedir, const CryConfig::FilesystemID &filesystemId);
 
 private:
-  BasedirMetadata(boost::property_tree::ptree data, boost::filesystem::path filename);
+  BasedirMetadata(boost::property_tree::ptree data, cpputils::FsAndPath filename);
 
-  boost::filesystem::path _filename;
+  cpputils::FsAndPath _filename;
   boost::property_tree::ptree _data;
 };
 

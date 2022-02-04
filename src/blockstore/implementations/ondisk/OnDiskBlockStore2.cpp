@@ -78,20 +78,20 @@ bool OnDiskBlockStore2::remove(const BlockId &blockId) {
 }
 
 optional<Data> OnDiskBlockStore2::load(const BlockId &blockId) const {
-  auto fileContent = Data::LoadFromFile(_getFilepath(blockId));
-  if (fileContent == none) {
-    return boost::none;
-  }
-  return _checkAndRemoveHeader(*fileContent);
+//  auto fileContent = Data::LoadFromFile(_getFilepath(blockId));
+//  if (fileContent == none) {
+//    return boost::none;
+//  }
+//  return _checkAndRemoveHeader(*fileContent);
 }
 
 void OnDiskBlockStore2::store(const BlockId &blockId, const Data &data) {
-  Data fileContent(formatVersionHeaderSize() + data.size());
-  std::memcpy(fileContent.data(), FORMAT_VERSION_HEADER.c_str(), formatVersionHeaderSize());
-  std::memcpy(fileContent.dataOffset(formatVersionHeaderSize()), data.data(), data.size());
-  auto filepath = _getFilepath(blockId);
-  boost::filesystem::create_directory(filepath.parent_path()); // TODO Instead create all of them once at fs creation time?
-  fileContent.StoreToFile(filepath);
+//  Data fileContent(formatVersionHeaderSize() + data.size());
+//  std::memcpy(fileContent.data(), FORMAT_VERSION_HEADER.c_str(), formatVersionHeaderSize());
+//  std::memcpy(fileContent.dataOffset(formatVersionHeaderSize()), data.data(), data.size());
+//  auto filepath = _getFilepath(blockId);
+//  boost::filesystem::create_directory(filepath.parent_path()); // TODO Instead create all of them once at fs creation time?
+//  fileContent.StoreToFile(filepath);
 }
 
 uint64_t OnDiskBlockStore2::numBlocks() const {

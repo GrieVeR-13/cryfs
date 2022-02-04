@@ -21,7 +21,7 @@ const string KnownBlockVersions::OLD_HEADER = "cryfs.integritydata.knownblockver
 const string KnownBlockVersions::HEADER = "cryfs.integritydata.knownblockversions;1";
 constexpr uint32_t KnownBlockVersions::CLIENT_ID_FOR_DELETED_BLOCK;
 
-KnownBlockVersions::KnownBlockVersions(const bf::path &stateFilePath, uint32_t myClientId)
+KnownBlockVersions::KnownBlockVersions(const cpputils::FsAndPath &stateFilePath, uint32_t myClientId)
         :_integrityViolationOnPreviousRun(false), _knownVersions(), _lastUpdateClientId(), _stateFilePath(stateFilePath), _myClientId(myClientId), _mutex(), _valid(true) {
     unique_lock<mutex> lock(_mutex);
     ASSERT(_myClientId != CLIENT_ID_FOR_DELETED_BLOCK, "This is not a valid client id");
@@ -238,7 +238,7 @@ std::unordered_set<BlockId> KnownBlockVersions::existingBlocks() const {
 }
 
 const bf::path &KnownBlockVersions::path() const {
-    return _stateFilePath;
+    return _stateFilePath.getPath();
 }
 
 }

@@ -32,7 +32,7 @@ CryConfigLoader::CryConfigLoader(shared_ptr<Console> console, RandomGenerator &k
       _localStateDir(std::move(localStateDir)) {
 }
 
-either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> CryConfigLoader::_loadConfig(bf::path filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem, CryConfigFile::Access access) {
+either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> CryConfigLoader::_loadConfig(cpputils::FsAndPath filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem, CryConfigFile::Access access) {
   auto config = CryConfigFile::load(std::move(filename), _keyProvider.get(), access);
   if (config.is_left()) {
     return config.left();
@@ -105,19 +105,19 @@ void CryConfigLoader::_checkMissingBlocksAreIntegrityViolations(CryConfigFile *c
   }
 }
 
-either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> CryConfigLoader::load(bf::path filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem, CryConfigFile::Access access) {
+either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> CryConfigLoader::load(cpputils::FsAndPath filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem, CryConfigFile::Access access) {
   return _loadConfig(std::move(filename), allowFilesystemUpgrade, allowReplacedFilesystem, access);
 }
 
-either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> CryConfigLoader::loadOrCreate(bf::path filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem) {
-  if (bf::exists(filename)) {
+either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> CryConfigLoader::loadOrCreate(cpputils::FsAndPath filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem) {
+  if (filename.getDataFileSystem()->exists(filename.getPath())) {
     return _loadConfig(std::move(filename), allowFilesystemUpgrade, allowReplacedFilesystem, CryConfigFile::Access::ReadWrite);
   } else {
     return _createConfig(std::move(filename), allowReplacedFilesystem);
   }
 }
 
-CryConfigLoader::ConfigLoadResult CryConfigLoader::_createConfig(bf::path filename, bool allowReplacedFilesystem) {
+CryConfigLoader::ConfigLoadResult CryConfigLoader::_createConfig(cpputils::FsAndPath filename, bool allowReplacedFilesystem) {
   auto config = _creator.create(_cipherFromCommandLine, _blocksizeBytesFromCommandLine, _missingBlockIsIntegrityViolationFromCommandLine, allowReplacedFilesystem);
   auto result = CryConfigFile::create(std::move(filename), config.config, _keyProvider.get());
   return ConfigLoadResult {std::move(config.config), std::move(result), config.myClientId};

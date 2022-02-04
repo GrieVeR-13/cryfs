@@ -103,7 +103,7 @@ void IntegrityBlockStore2::integrityViolationDetected(const string &reason) cons
   _onIntegrityViolation();
 }
 
-IntegrityBlockStore2::IntegrityBlockStore2(unique_ref<BlockStore2> baseBlockStore, const boost::filesystem::path &integrityFilePath, uint32_t myClientId, bool allowIntegrityViolations, bool missingBlockIsIntegrityViolation, std::function<void ()> onIntegrityViolation)
+IntegrityBlockStore2::IntegrityBlockStore2(unique_ref<BlockStore2> baseBlockStore, const cpputils::FsAndPath &integrityFilePath, uint32_t myClientId, bool allowIntegrityViolations, bool missingBlockIsIntegrityViolation, std::function<void ()> onIntegrityViolation)
 : _baseBlockStore(std::move(baseBlockStore)), _knownBlockVersions(integrityFilePath, myClientId), _allowIntegrityViolations(allowIntegrityViolations), _missingBlockIsIntegrityViolation(missingBlockIsIntegrityViolation), _onIntegrityViolation(std::move(onIntegrityViolation)) {
   if (_knownBlockVersions.integrityViolationOnPreviousRun()) {
     throw IntegrityViolationOnPreviousRun(_knownBlockVersions.path());
@@ -199,7 +199,7 @@ void IntegrityBlockStore2::forEachBlock(std::function<void (const BlockId &)> ca
 }
 
 #ifndef CRYFS_NO_COMPATIBILITY
-void IntegrityBlockStore2::migrateFromBlockstoreWithoutVersionNumbers(BlockStore2 *baseBlockStore, const boost::filesystem::path &integrityFilePath, uint32_t myClientId) {
+void IntegrityBlockStore2::migrateFromBlockstoreWithoutVersionNumbers(BlockStore2 *baseBlockStore, const cpputils::FsAndPath &integrityFilePath, uint32_t myClientId) {
   SignalCatcher signalCatcher;
 
   KnownBlockVersions knownBlockVersions(integrityFilePath, myClientId);

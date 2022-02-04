@@ -18,7 +18,7 @@ namespace blockstore {
 
         class KnownBlockVersions final {
         public:
-            KnownBlockVersions(const boost::filesystem::path &stateFilePath, uint32_t myClientId);
+            KnownBlockVersions(const cpputils::FsAndPath &stateFilePath, uint32_t myClientId);
             KnownBlockVersions(KnownBlockVersions &&rhs); // NOLINT (intentionally not noexcept)
             ~KnownBlockVersions();
 
@@ -47,7 +47,7 @@ namespace blockstore {
             std::unordered_map<ClientIdAndBlockId, uint64_t> _knownVersions;
             std::unordered_map<BlockId, uint32_t> _lastUpdateClientId; // The client who last updated the block
 
-            boost::filesystem::path _stateFilePath;
+            cpputils::FsAndPath _stateFilePath;
             uint32_t _myClientId;
             mutable std::mutex _mutex;
             bool _valid;

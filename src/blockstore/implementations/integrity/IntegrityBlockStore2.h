@@ -32,7 +32,7 @@ private:
 // It depends on being used on top of an encrypted block store that protects integrity of the block contents (i.e. uses an authenticated cipher).
 class IntegrityBlockStore2 final: public BlockStore2 {
 public:
-  IntegrityBlockStore2(cpputils::unique_ref<BlockStore2> baseBlockStore, const boost::filesystem::path &integrityFilePath, uint32_t myClientId, bool allowIntegrityViolations, bool missingBlockIsIntegrityViolation, std::function<void ()> onIntegrityViolation);
+  IntegrityBlockStore2(cpputils::unique_ref<BlockStore2> baseBlockStore, const cpputils::FsAndPath &integrityFilePath, uint32_t myClientId, bool allowIntegrityViolations, bool missingBlockIsIntegrityViolation, std::function<void ()> onIntegrityViolation);
 
   bool tryCreate(const BlockId &blockId, const cpputils::Data &data) override;
   bool remove(const BlockId &blockId) override;
@@ -58,7 +58,7 @@ public:
   static constexpr unsigned int HEADER_LENGTH = VERSION_HEADER_OFFSET + sizeof(VERSION_ZERO);
 
 #ifndef CRYFS_NO_COMPATIBILITY
-  static void migrateFromBlockstoreWithoutVersionNumbers(BlockStore2 *baseBlockStore, const boost::filesystem::path &integrityFilePath, uint32_t myClientId);
+  static void migrateFromBlockstoreWithoutVersionNumbers(BlockStore2 *baseBlockStore, const cpputils::FsAndPath &integrityFilePath, uint32_t myClientId);
   static void migrateBlockFromBlockstoreWithoutVersionNumbers(BlockStore2* baseBlockStore, const blockstore::BlockId &blockId, KnownBlockVersions *knownBlockVersions);
 #endif
 

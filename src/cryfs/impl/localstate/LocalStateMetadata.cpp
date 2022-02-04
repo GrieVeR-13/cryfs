@@ -28,7 +28,7 @@ namespace cryfs {
 LocalStateMetadata::LocalStateMetadata(uint32_t myClientId, Hash encryptionKeyHash)
 : _myClientId(myClientId), _encryptionKeyHash(encryptionKeyHash) {}
 
-LocalStateMetadata LocalStateMetadata::loadOrGenerate(const bf::path &statePath, const Data& encryptionKey, bool allowReplacedFilesystem) {
+LocalStateMetadata LocalStateMetadata::loadOrGenerate(const cpputils::FsAndPath &statePath, const Data& encryptionKey, bool allowReplacedFilesystem) {
   auto metadataFile = statePath / "metadata";
   auto loaded = load_(metadataFile);
   if (loaded == none) {
@@ -42,8 +42,8 @@ LocalStateMetadata LocalStateMetadata::loadOrGenerate(const bf::path &statePath,
   return *loaded;
 }
 
-optional<LocalStateMetadata> LocalStateMetadata::load_(const bf::path &metadataFilePath) {
-  ifstream file(metadataFilePath.string());
+optional<LocalStateMetadata> LocalStateMetadata::load_(const cpputils::FsAndPath &metadataFilePath) {
+  ifstream file(metadataFilePath.getPath().string()); //todoe
   if (!file.good()) {
     // State file doesn't exist
     return none;
@@ -51,8 +51,8 @@ optional<LocalStateMetadata> LocalStateMetadata::load_(const bf::path &metadataF
   return deserialize_(file);
 }
 
-void LocalStateMetadata::save_(const bf::path &metadataFilePath) const {
-  ofstream file(metadataFilePath.string(), std::ios::trunc);
+void LocalStateMetadata::save_(const cpputils::FsAndPath &metadataFilePath) const {
+  ofstream file(metadataFilePath.getPath().string(), std::ios::trunc);
   serialize_(file);
 }
 
@@ -66,8 +66,8 @@ uint32_t generateClientId_() {
 }
 
 #ifndef CRYFS_NO_COMPATIBILITY
-optional<uint32_t> _tryLoadClientIdFromLegacyFile(const bf::path &metadataFilePath) {
-  auto myClientIdFile = metadataFilePath.parent_path() / "myClientId";
+optional<uint32_t> _tryLoadClientIdFromLegacyFile(const cpputils::FsAndPath &metadataFilePath) {
+  auto myClientIdFile = metadataFilePath.getPath().parent_path() / "myClientId";
   ifstream file(myClientIdFile.string());
   if (!file.good()) {
     return none;
@@ -82,7 +82,7 @@ optional<uint32_t> _tryLoadClientIdFromLegacyFile(const bf::path &metadataFilePa
 #endif
 }
 
-LocalStateMetadata LocalStateMetadata::generate_(const bf::path &metadataFilePath, const Data& encryptionKey) {
+LocalStateMetadata LocalStateMetadata::generate_(const cpputils::FsAndPath &metadataFilePath, const Data& encryptionKey) {
   uint32_t myClientId = generateClientId_();
 #ifndef CRYFS_NO_COMPATIBILITY
   // In the old format, this was stored in a "myClientId" file. If that file exists, load it from there.
