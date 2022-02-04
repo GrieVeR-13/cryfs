@@ -8,6 +8,7 @@
 #include <filesystem/FsObjectNative.h>
 #include <filesystem/SpaceInfoNative.h>
 #include <Exception.h>
+#include "nativehelper/ScopedLocalRef.h"
 
 using std::string;
 using boost::optional;
@@ -74,9 +75,8 @@ namespace blockstore {
 
         bool EdsBlockStore::remove(const BlockId &blockId) {
             auto filepath = _getFilepath(blockId);
-            auto fsObject = pathnameFileSystem.getObject(filepath.string());
-            FsObjectNative fileSystemObject(fsObject);
-            get_env()->DeleteLocalRef(fsObject);
+            ScopedLocalRef<jobject> fsObject(get_env(),  pathnameFileSystem.getObject(filepath.string()));
+            FsObjectNative fileSystemObject(fsObject.get());
             if (!fileSystemObject.isFile()) { // TODO Is this branch necessary?
                 return false;
             }
@@ -112,26 +112,23 @@ namespace blockstore {
         uint64_t EdsBlockStore::numBlocks() const {
             uint64_t count = 0;
             auto env = get_env();
-            auto fsoArray = pathnameFileSystem.listMembers(_rootDir.string());
-            jsize numFiles = env->GetArrayLength(fsoArray);
+            ScopedLocalRef<jobjectArray> fsoArray(env, pathnameFileSystem.listMembers(_rootDir.string()));
+            jsize numFiles = env->GetArrayLength(fsoArray.get());
             for (int i = 0; i < numFiles; i++) {
-                jobject fso = env->GetObjectArrayElement(fsoArray, i);
-                FsObjectNative fsObjectNative(fso);
+                ScopedLocalRef<jobject> fso(env, env->GetObjectArrayElement(fsoArray.get(), i));
+                FsObjectNative fsObjectNative(fso.get());
                 if (fsObjectNative.isGroup()) {
                     count += pathnameFileSystem.getNumberOfGroupMembers((_rootDir / fsObjectNative.getName()).string()); //todo check
                 }
-                env->DeleteLocalRef(fso);
             }
-            env->DeleteLocalRef(fsoArray);
             return count;
         }
 
         uint64_t EdsBlockStore::estimateNumFreeBytes() const {
             auto env = get_env();
-            auto spaceInfoObject = pathnameFileSystem.getSpaceInfo(_rootDir.string());
-            SpaceInfoNative spaceInfoNative(env, spaceInfoObject);
+            ScopedLocalRef<jobject> spaceInfoObject(env, pathnameFileSystem.getSpaceInfo(_rootDir.string()));
+            SpaceInfoNative spaceInfoNative(env, spaceInfoObject.get());
             auto freeSpace = spaceInfoNative.getFreeSpace();
-            env->DeleteLocalRef(spaceInfoObject);
             return freeSpace;
         }
 
@@ -144,11 +141,11 @@ namespace blockstore {
 
         void EdsBlockStore::forEachBlock(std::function<void(const BlockId &)> callback) const {
             auto env = get_env();
-            auto prefixFsoArray = pathnameFileSystem.listMembers(_rootDir.string());
-            jsize numPrefixes = env->GetArrayLength(prefixFsoArray);
+            ScopedLocalRef<jobjectArray> prefixFsoArray(env, pathnameFileSystem.listMembers(_rootDir.string()));
+            jsize numPrefixes = env->GetArrayLength(prefixFsoArray.get());
             for (int i = 0; i < numPrefixes; i++) {
-                jobject prefixObject = env->GetObjectArrayElement(prefixFsoArray, i);
-                FsObjectNative prefixFsObjectNative(prefixObject);
+                ScopedLocalRef<jobject> prefixObject(env, env->GetObjectArrayElement(prefixFsoArray.get(), i));
+                FsObjectNative prefixFsObjectNative(prefixObject.get());
                 if (!prefixFsObjectNative.isGroup())
                     continue;
 
@@ -157,11 +154,11 @@ namespace blockstore {
                     // directory has wrong length or an invalid character
                     continue;
                 }
-                auto blockArray = pathnameFileSystem.listMembers((_rootDir / prefixFsObjectNative.getName()).string());
-                jsize numBlocks = env->GetArrayLength(blockArray);
+                ScopedLocalRef<jobjectArray> blockArray(env, pathnameFileSystem.listMembers((_rootDir / prefixFsObjectNative.getName()).string()));
+                jsize numBlocks = env->GetArrayLength(blockArray.get());
                 for (int j = 0; j < numBlocks; j++) {
-                    jobject blockObject = env->GetObjectArrayElement(blockArray, j);
-                    FsObjectNative blockFsObjectNative(blockObject);
+                    ScopedLocalRef<jobject> blockObject(env, env->GetObjectArrayElement(blockArray.get(), j));
+                    FsObjectNative blockFsObjectNative(blockObject.get());
 
                     std::string blockIdPostfix = blockFsObjectNative.getName();
                     if (blockIdPostfix.size() != POSTFIX_LENGTH || std::string::npos != blockIdPostfix.find_first_not_of(ALLOWED_BLOCKID_CHARACTERS)) {
@@ -171,13 +168,8 @@ namespace blockstore {
 
                     callback(BlockId::FromString(blockIdPrefix + blockIdPostfix));
 
-                    env->DeleteLocalRef(blockObject);
                 }
-                env->DeleteLocalRef(blockArray);
-
-                env->DeleteLocalRef(prefixObject);
             }
-            env->DeleteLocalRef(prefixFsoArray);
         }
     }
 }
