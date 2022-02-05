@@ -23,13 +23,13 @@ namespace cryfs_cli {
         return nullptr != std::getenv(NOUPDATECHECK_KEY.c_str());
     }
 
-    const cpputils::FsAndPath& Environment::defaultLocalStateDir() {
+    const boost::filesystem::path& Environment::defaultLocalStateDir() {
 //        static const bf::path value = cpputils::system::HomeDirectory::getXDGDataDir() / "cryfs";
-//        static const bf::path value = "/storage/emulated/0/cryfs"; //todoe
-//        return value;
+        static const bf::path value = "/cryfs"; //todoe
+        return value;
     }
 
-    cpputils::FsAndPath Environment::localStateDir() {
+    boost::filesystem::path Environment::localStateDir() {
 //        const char* localStateDir = std::getenv(LOCALSTATEDIR_KEY.c_str());
 
 //        if (nullptr == localStateDir) {

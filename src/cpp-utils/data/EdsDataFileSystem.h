@@ -16,9 +16,17 @@ namespace cpputils {
 
         }
 
+        bool exists(const boost::filesystem::path &path) const;
+
+        void create_directories(const boost::filesystem::path &path) const;
+
         std::shared_ptr<PathnameFileSystemNative> getPathnameFileSystemNative() const {
             return pathnameFileSystemNative;
         };
+
+        std::unique_ptr<std::istream> openInputStream(const boost::filesystem::path &path) const;
+
+        std::unique_ptr<std::ostream> openOutputStream(const boost::filesystem::path &path) const;
 
     private:
         std::shared_ptr<PathnameFileSystemNative> pathnameFileSystemNative;

@@ -2,6 +2,7 @@
 #define EDS3_DATAFILESYSTEM_H
 
 #include <boost/filesystem.hpp>
+#include "jni.h"
 
 namespace cpputils {
 
@@ -12,13 +13,22 @@ namespace cpputils {
 
         virtual ~DataFileSystem() {}
 
-        bool exists(const boost::filesystem::path &path) const {
+        virtual bool exists(const boost::filesystem::path &path) const {
             return boost::filesystem::exists(path);
         }
 
-        void create_directories(const boost::filesystem::path &path) const {
+        virtual void create_directories(const boost::filesystem::path &path) const {
             boost::filesystem::create_directories(path);
         }
+
+        virtual std::unique_ptr<std::istream> openInputStream(const boost::filesystem::path &path) const {
+            return std::make_unique<std::ifstream>(path.string());
+        }
+
+        virtual std::unique_ptr<std::ostream> openOutputStream(const boost::filesystem::path &path) const {
+            return std::make_unique<std::ofstream>(path.string());
+        }
+
     };
 }
 

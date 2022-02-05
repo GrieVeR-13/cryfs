@@ -10,9 +10,8 @@ namespace cryfs_cli {
             const char *argv[] = {"cryfs", groupPathname, "/storage/emulated/0/cryfs/mountdir"};
             try {
                 auto &keyGenerator = cpputils::Random::OSRandom();
-                cryfs_cli::Cli(keyGenerator, cpputils::SCrypt::TestSettings, std::make_shared<cpputils::EdsConsole>()).main(pathnameFileSystem, //todoe openmp
-                        argc, argv, [] {});
-                return 0;
+                return cryfs_cli::Cli(keyGenerator, cpputils::SCrypt::TestSettings, std::make_shared<cpputils::EdsConsole>())
+                        .main(pathnameFileSystem, argc, argv, [] {}); //todoe openmp
             } catch (const std::exception &e) {
                 return -1;
             }

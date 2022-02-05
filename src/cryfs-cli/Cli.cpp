@@ -32,6 +32,8 @@
 #include <pathresolver/PathResolverProviderNative.h>
 #include <util.h>
 #include <cpp-utils/data/EdsDataFileSystem.h>
+#include <log.h>
+#include <filesystem/RandomAccessIONative.h>
 
 //TODO Many functions accessing the ProgramOptions object. Factor out into class that stores it as a member.
 //TODO Factor out class handling askPassword
@@ -263,7 +265,20 @@ namespace cryfs_cli {
 
     void Cli::_runFilesystem(const ProgramOptions &options, std::function<void()> onMounted) {
         try {
-            LocalStateDir localStateDir(Environment::localStateDir());
+
+            {
+                auto a = options.baseDir().getDataFileSystem()->openInputStream(boost::filesystem::path("/test"));
+                std::string ss;
+            }
+            {
+                auto a = options.baseDir().getDataFileSystem()->openOutputStream(boost::filesystem::path("/test"));
+                std::string ss = "asd";
+                *a << ss;
+            }
+//            *a >> ss;
+//            delete a;
+
+            LocalStateDir localStateDir(cpputils::FsAndPath(options.baseDir().getDataFileSystem(), Environment::localStateDir()));
 
             auto blockStore = make_unique_ref<EdsBlockStore>(options.baseDir()); //todoe
             auto config = _loadOrCreateConfig(options, localStateDir);
@@ -323,9 +338,9 @@ namespace cryfs_cli {
         } catch (const CryfsException &e) {
             throw; // CryfsException is only thrown if setup goes wrong. Throw it through so that we get the correct process exit code.
         } catch (const std::exception &e) {
-            LOG(ERR, "Crashed: {}", e.what());
+            LOGE( "Crashed: %s", e.what());
         } catch (...) {
-            LOG(ERR, "Crashed");
+            LOGE( "Crashed");
         }
     }
 
@@ -459,14 +474,16 @@ namespace cryfs_cli {
             ProgramOptions options = program_options::Parser(argc, argv).parse(edsDataFileSystem, CryCiphers::supportedCipherNames());
 //            _sanityChecks(options);
             _runFilesystem(options, std::move(onMounted));
+            LOGI("Runfs: %s");
         } catch (const CryfsException &e) {
+            LOGI("Error: %s", e.what());
             if (e.what() != string()) {
               std::cerr << "Error " << static_cast<int>(e.errorCode()) << ": " << e.what() << std::endl;
             }
-            return exitCode(e.errorCode());
+            return -exitCode(e.errorCode());
         } catch (const std::runtime_error &e) {
-            std::cerr << "Error: " << e.what() << std::endl;
-            return exitCode(ErrorCode::UnspecifiedError);
+            LOGI("Error: %s", e.what());
+            return -exitCode(ErrorCode::UnspecifiedError);
         }
         return exitCode(ErrorCode::Success);
     }
