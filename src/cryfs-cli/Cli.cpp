@@ -474,7 +474,7 @@ namespace cryfs_cli {
             ProgramOptions options = program_options::Parser(argc, argv).parse(edsDataFileSystem, CryCiphers::supportedCipherNames());
 //            _sanityChecks(options);
             _runFilesystem(options, std::move(onMounted));
-            LOGI("Runfs: %s");
+            LOGI("Runfs");
         } catch (const CryfsException &e) {
             LOGI("Error: %s", e.what());
             if (e.what() != string()) {
