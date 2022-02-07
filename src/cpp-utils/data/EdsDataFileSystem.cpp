@@ -1,6 +1,7 @@
 #include <filesystem/RandomAccessIONative.h>
 #include <util.h>
 #include <nativehelper/ScopedLocalRef.h>
+#include <Exception.h>
 #include "EdsDataFileSystem.h"
 
 namespace cpputils {
@@ -134,13 +135,26 @@ namespace cpputils {
     }
 
     std::unique_ptr<std::istream> EdsDataFileSystem::openInputStream(const boost::filesystem::path &path) const {  //todoe std::ios::binary ?
-        auto inputStreamObject = ScopedLocalRef<jobject>(get_env(), pathnameFileSystemNative->openRandomAccessIO(path.string()));
-        return std::make_unique<InputStreamNativeIStream>(inputStreamObject.get());
+        try {
+            auto inputStreamObject = ScopedLocalRef<jobject>(get_env(), pathnameFileSystemNative->openRandomAccessIO(path.string()));
+            return std::make_unique<InputStreamNativeIStream>(inputStreamObject.get());
+        }
+        catch(const Exception &e) {
+            return std::make_unique<std::basic_istream<char>>(nullptr);
+        }
+
     }
 
     std::unique_ptr<std::ostream> EdsDataFileSystem::openOutputStream(const boost::filesystem::path &path) const { //todoe std::ios::binary | std::ios::trunc ?
-        auto outputStreamObject = ScopedLocalRef<jobject>(get_env(), pathnameFileSystemNative->openRandomAccessIO(path.string()));
-        return std::make_unique<OutputStreamNativeOStream>(outputStreamObject.get());
+        try {
+            if (!pathnameFileSystemNative->exists(path.string())) {
+                pathnameFileSystemNative->newFile(path.string());
+            }
+            auto outputStreamObject = ScopedLocalRef<jobject>(get_env(), pathnameFileSystemNative->openRandomAccessIO(path.string()));
+            return std::make_unique<OutputStreamNativeOStream>(outputStreamObject.get());
+        }
+        catch(const Exception &e) {
+            return std::make_unique<std::basic_ostream<char>>(nullptr);
+        }
     }
-
 }

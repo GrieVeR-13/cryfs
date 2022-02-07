@@ -27,7 +27,7 @@ optional<Data> Data::LoadFromFile(const FsAndPath &filepath) {
   return result;
 }
 
-std::streampos Data::_getStreamSize(istream &stream) {
+std::streampos Data::_getStreamSize(istream &stream) { //todoe
   auto current_pos = stream.tellg();
 
   //Retrieve length

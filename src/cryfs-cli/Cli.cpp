@@ -266,15 +266,15 @@ namespace cryfs_cli {
     void Cli::_runFilesystem(const ProgramOptions &options, std::function<void()> onMounted) {
         try {
 
-            {
-                auto a = options.baseDir().getDataFileSystem()->openInputStream(boost::filesystem::path("/test"));
-                std::string ss;
-            }
-            {
-                auto a = options.baseDir().getDataFileSystem()->openOutputStream(boost::filesystem::path("/test"));
-                std::string ss = "asd";
-                *a << ss;
-            }
+//            {
+//                auto a = options.baseDir().getDataFileSystem()->openInputStream(boost::filesystem::path("/test"));
+//                std::string ss;
+//            }
+//            {
+//                auto a = options.baseDir().getDataFileSystem()->openOutputStream(boost::filesystem::path("/test"));
+//                std::string ss = "asd";
+//                *a << ss;
+//            }
 //            *a >> ss;
 //            delete a;
 
