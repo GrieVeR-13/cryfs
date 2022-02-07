@@ -20,6 +20,8 @@ namespace cpputils {
 
         void create_directories(const boost::filesystem::path &path) const;
 
+        void remove(const boost::filesystem::path &path) const;
+
         std::shared_ptr<PathnameFileSystemNative> getPathnameFileSystemNative() const {
             return pathnameFileSystemNative;
         };

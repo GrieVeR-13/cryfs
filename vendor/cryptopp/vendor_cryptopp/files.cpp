@@ -50,7 +50,7 @@ void Files_TestInstantiations()
 }
 #endif
 
-void FileStore::StoreInitialize(const NameValuePairs &parameters)
+void FileStore::StoreInitialize(const NameValuePairs &parameters) //todoe
 {
 	m_waiting = false;
 	m_stream = NULLPTR;
@@ -218,7 +218,7 @@ lword FileStore::Skip(lword skipMax)
 	return (lword)m_stream->tellg() - oldPos;
 }
 
-void FileSink::IsolatedInitialize(const NameValuePairs &parameters)
+void FileSink::IsolatedInitialize(const NameValuePairs &parameters)//todoe
 {
 	m_stream = NULLPTR;
 	m_file.release();

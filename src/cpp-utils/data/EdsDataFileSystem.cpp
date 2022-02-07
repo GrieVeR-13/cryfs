@@ -1,4 +1,6 @@
 #include <filesystem/RandomAccessIONative.h>
+#include <util.h>
+#include <nativehelper/ScopedLocalRef.h>
 #include "EdsDataFileSystem.h"
 
 namespace cpputils {
@@ -126,14 +128,19 @@ namespace cpputils {
         pathnameFileSystemNative->newGroup(path.string(), true);
     }
 
-    std::unique_ptr<std::istream> EdsDataFileSystem::openInputStream(const boost::filesystem::path &path) const {
-        auto inputStreamObject = pathnameFileSystemNative->openRandomAccessIO(path.string());
-        return std::make_unique<InputStreamNativeIStream>(inputStreamObject);
+
+    void EdsDataFileSystem::remove(const boost::filesystem::path &path) const {
+        pathnameFileSystemNative->deleteObject(path.string());
     }
 
-    std::unique_ptr<std::ostream> EdsDataFileSystem::openOutputStream(const boost::filesystem::path &path) const {
-        auto outputStreamObject = pathnameFileSystemNative->openRandomAccessIO(path.string()); //todo scoped
-        return std::make_unique<OutputStreamNativeOStream>(outputStreamObject);
+    std::unique_ptr<std::istream> EdsDataFileSystem::openInputStream(const boost::filesystem::path &path) const {  //todoe std::ios::binary ?
+        auto inputStreamObject = ScopedLocalRef<jobject>(get_env(), pathnameFileSystemNative->openRandomAccessIO(path.string()));
+        return std::make_unique<InputStreamNativeIStream>(inputStreamObject.get());
+    }
+
+    std::unique_ptr<std::ostream> EdsDataFileSystem::openOutputStream(const boost::filesystem::path &path) const { //todoe std::ios::binary | std::ios::trunc ?
+        auto outputStreamObject = ScopedLocalRef<jobject>(get_env(), pathnameFileSystemNative->openRandomAccessIO(path.string()));
+        return std::make_unique<OutputStreamNativeOStream>(outputStreamObject.get());
     }
 
 }

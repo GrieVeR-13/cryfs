@@ -25,10 +25,10 @@ namespace {
 ptree _load(const cpputils::FsAndPath &metadataFilePath) {
 	try {
 		ptree result;
-
-		ifstream file(metadataFilePath.getPath().string()); //todoe stream
-		if (file.good()) {
-			read_json(file, result);
+//        ifstream file(metadataFilePath.getPath().string());
+        auto file = metadataFilePath.getDataFileSystem()->openInputStream(metadataFilePath.getPath());
+		if (file->good()) {
+			read_json(*file, result);
 		}
 
 		return result;
@@ -40,12 +40,13 @@ ptree _load(const cpputils::FsAndPath &metadataFilePath) {
 }
 
 void _save(const cpputils::FsAndPath &metadataFilePath, const ptree& data) {
-  ofstream file(metadataFilePath.getPath().string(), std::ios::trunc);
-  write_json(file, data);
+//  ofstream file(metadataFilePath.getPath().string(), std::ios::trunc);
+  auto file = metadataFilePath.getDataFileSystem()->openOutputStream(metadataFilePath.getPath());
+  write_json(*file, data);
 }
 
 string jsonPathForBasedir(const cpputils::FsAndPath &basedir) {
-  return bf::canonical(basedir.getPath()).string() + ".filesystemId"; //todoe
+  return bf::canonical(basedir.getPath()).string() + ".filesystemId";
 }
 
 }

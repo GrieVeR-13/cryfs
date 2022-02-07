@@ -21,12 +21,16 @@ namespace cpputils {
             boost::filesystem::create_directories(path);
         }
 
+        virtual void remove(const boost::filesystem::path &path) const {
+            boost::filesystem::remove(path);
+        }
+
         virtual std::unique_ptr<std::istream> openInputStream(const boost::filesystem::path &path) const {
-            return std::make_unique<std::ifstream>(path.string());
+            return std::make_unique<std::ifstream>(path.string().c_str(), std::ios::binary);
         }
 
         virtual std::unique_ptr<std::ostream> openOutputStream(const boost::filesystem::path &path) const {
-            return std::make_unique<std::ofstream>(path.string());
+            return std::make_unique<std::ofstream>(path.string().c_str(), std::ios::binary | std::ios::trunc);
         }
 
     };

@@ -43,16 +43,18 @@ LocalStateMetadata LocalStateMetadata::loadOrGenerate(const cpputils::FsAndPath 
 }
 
 optional<LocalStateMetadata> LocalStateMetadata::load_(const cpputils::FsAndPath &metadataFilePath) {
-  ifstream file(metadataFilePath.getPath().string()); //todoe
-  if (!file.good()) {
+//  ifstream file(metadataFilePath.getPath().string());
+  auto file = metadataFilePath.getDataFileSystem()->openInputStream(metadataFilePath.getPath());
+  if (!file->good()) {
     // State file doesn't exist
     return none;
   }
-  return deserialize_(file);
+  return deserialize_(*file);
 }
 
 void LocalStateMetadata::save_(const cpputils::FsAndPath &metadataFilePath) const {
-  ofstream file(metadataFilePath.getPath().string(), std::ios::trunc);
+//  ofstream file(metadataFilePath.getPath().string(), std::ios::trunc);
+  auto file = metadataFilePath.getDataFileSystem()->openOutputStream(metadataFilePath.getPath());
   serialize_(file);
 }
 
@@ -68,15 +70,17 @@ uint32_t generateClientId_() {
 #ifndef CRYFS_NO_COMPATIBILITY
 optional<uint32_t> _tryLoadClientIdFromLegacyFile(const cpputils::FsAndPath &metadataFilePath) {
   auto myClientIdFile = metadataFilePath.getPath().parent_path() / "myClientId";
-  ifstream file(myClientIdFile.string());
-  if (!file.good()) {
+//  ifstream file(myClientIdFile.string());
+  auto file = metadataFilePath.getDataFileSystem()->openInputStream(myClientIdFile);
+  if (!file->good()) {
     return none;
   }
 
   uint32_t value = 0;
-  file >> value;
-  file.close();
-  bf::remove(myClientIdFile);
+  *file >> value;
+//  file->close();
+//  bf::remove(myClientIdFile);
+  metadataFilePath.getDataFileSystem()->remove(myClientIdFile);
   return value;
 }
 #endif
