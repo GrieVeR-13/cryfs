@@ -4,9 +4,10 @@
 #include <jni.h>
 
 namespace cryfs_cli {
-    namespace eds {
-        int openVolume(jobject pathnameFileSystem, const char* groupPathname);
-    }
+
+    void setCryfsConfig(jobject pathnameFileSystem, const char *configGroupPathname);
+
+    int openVolume(jobject pathnameFileSystem, const char *groupPathname);
 };
 
 #endif

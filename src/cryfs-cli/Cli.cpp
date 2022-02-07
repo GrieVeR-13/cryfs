@@ -265,22 +265,9 @@ namespace cryfs_cli {
 
     void Cli::_runFilesystem(const ProgramOptions &options, std::function<void()> onMounted) {
         try {
+            LocalStateDir localStateDir(Environment::localStateDir());
 
-//            {
-//                auto a = options.baseDir().getDataFileSystem()->openInputStream(boost::filesystem::path("/test"));
-//                std::string ss;
-//            }
-//            {
-//                auto a = options.baseDir().getDataFileSystem()->openOutputStream(boost::filesystem::path("/test"));
-//                std::string ss = "asd";
-//                *a << ss;
-//            }
-//            *a >> ss;
-//            delete a;
-
-            LocalStateDir localStateDir(cpputils::FsAndPath(options.baseDir().getDataFileSystem(), Environment::localStateDir()));
-
-            auto blockStore = make_unique_ref<EdsBlockStore>(options.baseDir()); //todoe
+            auto blockStore = make_unique_ref<EdsBlockStore>(options.baseDir());
             auto config = _loadOrCreateConfig(options, localStateDir);
             printConfig(config.oldConfig, *config.configFile->config());
             unique_ptr<Fuse> fuse = nullptr;

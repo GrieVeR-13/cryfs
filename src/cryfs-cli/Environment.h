@@ -12,8 +12,10 @@ namespace cryfs_cli {
     public:
         static bool isNoninteractive();
         static bool noUpdateCheck();
-        static boost::filesystem::path localStateDir();
+        static cpputils::FsAndPath localStateDir();
         static const boost::filesystem::path& defaultLocalStateDir();
+
+        static void setConfigPath(const cpputils::FsAndPath &path);
 
         static const std::string FRONTEND_KEY;
         static const std::string FRONTEND_NONINTERACTIVE;
