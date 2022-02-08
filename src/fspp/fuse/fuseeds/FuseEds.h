@@ -188,10 +188,6 @@ struct fuse_context {
     mode_t umask;
 };
 
-#define fuse_main(argc, argv, op, private_data)                \
-    fuse_main_real(argc, argv, op, sizeof(*(op)), private_data)
-
-
 struct fuse *fuse_new(struct fuse_args *args, const struct fuse_operations *op,
                       size_t op_size, void *private_data);
 
@@ -216,8 +212,7 @@ int fuse_interrupted(void);
 
 int fuse_invalidate_path(struct fuse *f, const char *path);
 
-int fuse_main_real(int argc, char *argv[], const struct fuse_operations *op,
-                   size_t op_size, void *private_data);
+int fuse_main(int argc, char *argv[], const struct fuse_operations *op,  void *private_data);
 
 int fuse_main_mount(int argc, char *argv[], const struct fuse_operations *op,
                     size_t op_size, void *user_data, struct fuse **fuse_result);
