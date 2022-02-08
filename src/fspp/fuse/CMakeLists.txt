@@ -4,11 +4,12 @@ set(SOURCES
   ../impl/FilesystemImpl.cpp
   ../impl/Profiler.cpp
   ../fuse/Fuse.cpp
-)
+  ../fuse/fuseeds/FuseEds.cpp
+        )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
-target_compile_definitions(${PROJECT_NAME} PUBLIC _FILE_OFFSET_BITS=64)
+#target_compile_definitions(${PROJECT_NAME} PUBLIC _FILE_OFFSET_BITS=64) //todoe
 target_link_libraries(${PROJECT_NAME} PUBLIC cpp-utils fspp-interface)
 
 target_add_boost(${PROJECT_NAME})
@@ -36,9 +37,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   )
 
 else() # Linux and macOS
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(fuseeds REQUIRED IMPORTED_TARGET fuseeds)
-  target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::Fuse)
+#  find_package(PkgConfig REQUIRED)
+#  pkg_check_modules(fuseeds REQUIRED IMPORTED_TARGET fuseeds)
+#  target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::Fuse)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

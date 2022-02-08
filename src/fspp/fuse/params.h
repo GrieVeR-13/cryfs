@@ -3,6 +3,6 @@
 #define MESSMER_FSPP_FUSE_PARAMS_H_
 
 #define FUSE_USE_VERSION 26
-#include "fuseeds/fuse.h"
+#include "fuseeds/FuseEds.h"
 
 #endif

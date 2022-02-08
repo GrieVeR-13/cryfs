@@ -2,7 +2,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 #add_subdirectory(gitversion)
 add_subdirectory(cpp-utils)
-#add_subdirectory(fspp)
+add_subdirectory(fspp)
 #add_subdirectory(parallelaccessstore)
 add_subdirectory(blockstore)
 add_subdirectory(blobstore)

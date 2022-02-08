@@ -19,10 +19,10 @@
 #include <codecvt>
 #include <boost/algorithm/string/replace.hpp>
 
-#include <range/v3/view/split.hpp>
-#include <range/v3/view/join.hpp>
-#include <range/v3/view/filter.hpp>
-#include <range/v3/range/conversion.hpp>
+//#include <range/v3/view/split.hpp>
+//#include <range/v3/view/join.hpp>
+//#include <range/v3/view/filter.hpp>
+//#include <range/v3/range/conversion.hpp>
 
 #if defined(_MSC_VER)
 #include <dokan/dokan.h>
@@ -124,7 +124,7 @@ int fusepp_ftruncate(const char *path, int64_t size, fuse_file_info *fileinfo) {
 }
 
 int fusepp_utimens(const char *path, const timespec times[2]) {  // NOLINT(cppcoreguidelines-avoid-c-arrays)
-  return FUSE_OBJ->utimens(bf::path(path), {times[0], times[1]});
+//  return FUSE_OBJ->utimens(bf::path(path), {times[0], times[1]}); //todoe
 }
 
 int fusepp_open(const char *path, fuse_file_info *fileinfo) {
@@ -232,12 +232,12 @@ fuse_operations *operations() {
     singleton->flush = &fusepp_flush;
     singleton->release = &fusepp_release;
     singleton->fsync = &fusepp_fsync;
-  /*#ifdef HAVE_SYS_XATTR_H
+  #ifdef HAVE_SYS_XATTR_H
     singleton->setxattr = &fusepp_setxattr;
     singleton->getxattr = &fusepp_getxattr;
     singleton->listxattr = &fusepp_listxattr;
     singleton->removexattr = &fusepp_removexattr;
-  #endif*/
+  #endif
     singleton->opendir = &fusepp_opendir;
     singleton->readdir = &fusepp_readdir;
     singleton->releasedir = &fusepp_releasedir;
@@ -303,31 +303,31 @@ void Fuse::_removeAndWarnIfExists(vector<string> *fuseOptions, const std::string
 
 namespace {
 void extractAllAtimeOptionsAndRemoveOnesUnknownToLibfuse_(string* csv_options, vector<string>* result) {
-    const auto is_fuse_supported_atime_flag = [] (const std::string& flag) {
+    /*const auto is_fuse_supported_atime_flag = [] (const std::string& flag) {
         constexpr std::array<const char*, 2> flags = {"noatime", "atime"};
         return flags.end() != std::find(flags.begin(), flags.end(), flag);
     };
     const auto is_fuse_unsupported_atime_flag = [] (const std::string& flag) {
         constexpr std::array<const char*, 3> flags = {"strictatime", "relatime", "nodiratime"};
         return flags.end() != std::find(flags.begin(), flags.end(), flag);
-    };
-    *csv_options = ranges::make_subrange(csv_options->begin(), csv_options->end())
-        | ranges::views::split(',')
-        | ranges::views::filter(
-            [&] (auto&& elem_) {
-                // TODO string_view would be better
-                std::string elem(&*elem_.begin(), ranges::distance(elem_));
-                if (is_fuse_unsupported_atime_flag(elem)) {
-                    result->push_back(elem);
-                    return false;
-                }
-                if (is_fuse_supported_atime_flag(elem)) {
-                    result->push_back(elem);
-                }
-                return true;
-            })
-        | ranges::views::join(',')
-        | ranges::to<string>();
+    };//todoe */
+//    *csv_options = ranges::make_subrange(csv_options->begin(), csv_options->end())
+//        | ranges::views::split(',')
+//        | ranges::views::filter(
+//            [&] (auto&& elem_) {
+//                // TODO string_view would be better
+//                std::string elem(&*elem_.begin(), ranges::distance(elem_));
+//                if (is_fuse_unsupported_atime_flag(elem)) {
+//                    result->push_back(elem);
+//                    return false;
+//                }
+//                if (is_fuse_supported_atime_flag(elem)) {
+//                    result->push_back(elem);
+//                }
+//                return true;
+//            })
+//        | ranges::views::join(',')
+//        | ranges::to<string>();
 }
 
 // Return a list of all atime options (e.g. atime, noatime, relatime, strictatime, nodiratime) that occur in the
@@ -490,11 +490,11 @@ void Fuse::unmount(const bf::path& mountdir, bool force) {
   int returncode = success ? 0 : -1;
 #else
   std::vector<std::string> args = force ? std::vector<std::string>({"-u", mountdir.string()}) : std::vector<std::string>({"-u", "-z", mountdir.string()});  // "-z" takes care that if the filesystem can't be unmounted right now because something is opened, it will be unmounted as soon as it can be.
-  int returncode = cpputils::Subprocess::call("fusermount", args, "").exitcode;
+//  int returncode = cpputils::Subprocess::call("fusermount", args, "").exitcode;
 #endif
-  if (returncode != 0) {
-    throw std::runtime_error("Could not unmount filesystem");
-  }
+//  if (returncode != 0) {
+//    throw std::runtime_error("Could not unmount filesystem");
+//  }
 }
 
 int Fuse::getattr(const bf::path &path, fspp::fuse::STAT *stbuf) {
@@ -890,7 +890,7 @@ int Fuse::ftruncate(const bf::path &path, int64_t size, fuse_file_info *fileinfo
   }
 }
 
-int Fuse::utimens(const bf::path &path, const std::array<timespec, 2> times) {
+/*int Fuse::utimens(const bf::path &path, const std::array<timespec, 2> times) { //todoe
   ThreadNameForDebugging _threadName("utimens");
 #ifdef FSPP_LOG
   LOG(DEBUG, "utimens({}, _)", path);
@@ -917,7 +917,7 @@ int Fuse::utimens(const bf::path &path, const std::array<timespec, 2> times) {
     _logUnknownException();
     return -EIO;
   }
-}
+}*/
 
 int Fuse::open(const bf::path &path, fuse_file_info *fileinfo) {
   ThreadNameForDebugging _threadName("open");
@@ -1161,12 +1161,12 @@ int Fuse::readdir(const bf::path &path, void *buf, fuse_fill_dir_t filler, int64
       } else {
         ASSERT(false, "Unknown entry type");
       }
-      if (filler(buf, entry.name.c_str(), &stbuf, 0) != 0) {
+/*      if (filler(buf, entry.name.c_str(), &stbuf, 0) != 0) { //todoe
 #ifdef FSPP_LOG
         LOG(DEBUG, "readdir({}, _, _, {}, _): failure with ENOMEM", path, offset);
 #endif
         return -ENOMEM;
-      }
+      }*/
     }
 #ifdef FSPP_LOG
     LOG(DEBUG, "readdir({}, _, _, {}, _): success", path, offset);
@@ -1231,7 +1231,7 @@ void Fuse::destroy() {
   _fs = make_shared<InvalidFilesystem>();
   LOG(INFO, "Filesystem stopped.");
   _running = false;
-  cpputils::logging::logger()->flush();
+  cpputils::logging::flush();
 }
 
 int Fuse::access(const bf::path &path, int mask) {

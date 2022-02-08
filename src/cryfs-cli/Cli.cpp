@@ -7,8 +7,7 @@
 #include <cstdlib>
 #include <cpp-utils/assert/backtrace.h>
 
-//#include <fspp/fuse/Fuse.h>
-#include "Fuse.h"
+#include <fspp/fuse/Fuse.h>
 #include <fspp/impl/FilesystemImpl.h>
 #include <cpp-utils/process/subprocess.h>
 #include <cpp-utils/io/DontEchoStdinToStdoutRAII.h>
@@ -270,7 +269,7 @@ namespace cryfs_cli {
             auto blockStore = make_unique_ref<EdsBlockStore>(options.baseDir());
             auto config = _loadOrCreateConfig(options, localStateDir);
             printConfig(config.oldConfig, *config.configFile->config());
-            unique_ptr<Fuse> fuse = nullptr;
+            unique_ptr<fspp::fuse::Fuse> fuse = nullptr;
             bool stoppedBecauseOfIntegrityViolation = false;
 
             auto onIntegrityViolation = [&fuse, &stoppedBecauseOfIntegrityViolation] () {
@@ -290,7 +289,7 @@ namespace cryfs_cli {
             _device = optional<unique_ref<CryDevice>>(make_unique_ref<CryDevice>(std::move(config.configFile), std::move(blockStore), std::move(localStateDir), config.myClientId, options.allowIntegrityViolations(), missingBlockIsIntegrityViolation, std::move(onIntegrityViolation)));
             _sanityCheckFilesystem(_device->get());
 
-            auto initFilesystem = [&] (Fuse *fs){
+            auto initFilesystem = [&] (fspp::fuse::Fuse *fs){
                 ASSERT(_device != none, "File system not ready to be initialized. Was it already initialized before?");
 
                 //TODO Test auto unmounting after idle timeout
@@ -306,7 +305,7 @@ namespace cryfs_cli {
                 return make_shared<fspp::FilesystemImpl>(std::move(*_device));
             };
 
-//            fuse = make_unique<fspp::fuse::Fuse>(initFilesystem, std::move(onMounted), "cryfs", "cryfs@" + options.baseDir().string());
+            fuse = make_unique<fspp::fuse::Fuse>(initFilesystem, std::move(onMounted), "cryfs", "cryfs@" + options.baseDir().getPath().string());
 
             _initLogfile(options);
 
@@ -314,9 +313,9 @@ namespace cryfs_cli {
                       << std::endl;
 
             if (options.foreground()) {
-//                fuse->runInForeground(options.mountDir(), options.fuseOptions());
+                fuse->runInForeground(options.mountDir(), options.fuseOptions());
             } else {
-//                fuse->runInBackground(options.mountDir(), options.fuseOptions());
+                fuse->runInBackground(options.mountDir(), options.fuseOptions());
             }
 
             if (stoppedBecauseOfIntegrityViolation) {
