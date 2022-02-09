@@ -1161,12 +1161,12 @@ int Fuse::readdir(const bf::path &path, void *buf, fuse_fill_dir_t filler, int64
       } else {
         ASSERT(false, "Unknown entry type");
       }
-/*      if (filler(buf, entry.name.c_str(), &stbuf, 0) != 0) { //todoe
+      if (filler(buf, entry.name.c_str(), &stbuf, 0) != 0) {
 #ifdef FSPP_LOG
         LOG(DEBUG, "readdir({}, _, _, {}, _): failure with ENOMEM", path, offset);
 #endif
         return -ENOMEM;
-      }*/
+      }
     }
 #ifdef FSPP_LOG
     LOG(DEBUG, "readdir({}, _, _, {}, _): success", path, offset);
