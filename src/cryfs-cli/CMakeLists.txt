@@ -9,7 +9,7 @@ set(SOURCES
         program_options/utils.cpp
         program_options/ProgramOptions.cpp
         program_options/Parser.cpp
-        CryfsLauncher.cpp
+        CryfsMain.cpp
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})

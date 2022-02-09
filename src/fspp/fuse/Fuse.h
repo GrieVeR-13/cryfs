@@ -26,8 +26,8 @@ public:
   explicit Fuse(std::function<std::shared_ptr<Filesystem> (Fuse *fuse)> init, std::function<void()> onMounted, std::string fstype, boost::optional<std::string> fsname);
   ~Fuse();
 
-  void runInBackground(const boost::filesystem::path &mountdir, std::vector<std::string> fuseOptions);
-  void runInForeground(const boost::filesystem::path &mountdir, std::vector<std::string> fuseOptions);
+  FuseFileSystemNative * runInBackground(const boost::filesystem::path &mountdir, std::vector<std::string> fuseOptions);
+  FuseFileSystemNative * runInForeground(const boost::filesystem::path &mountdir, std::vector<std::string> fuseOptions);
   bool running() const;
   void stop();
 
@@ -69,7 +69,7 @@ private:
   static void _logUnknownException();
   static char *_create_c_string(const std::string &str);
   static void _removeAndWarnIfExists(std::vector<std::string> *fuseOptions, const std::string &option);
-  void _run(const boost::filesystem::path &mountdir, std::vector<std::string> fuseOptions);
+  FuseFileSystemNative * _run(const boost::filesystem::path &mountdir, std::vector<std::string> fuseOptions);
   static bool _has_option(const std::vector<char *> &vec, const std::string &key);
   static bool _has_entry_with_prefix(const std::string &prefix, const std::vector<char *> &vec);
   std::vector<char *> _build_argv(const boost::filesystem::path &mountdir, const std::vector<std::string> &fuseOptions);

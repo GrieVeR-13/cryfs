@@ -262,7 +262,8 @@ namespace cryfs_cli {
         }
     }
 
-    void Cli::_runFilesystem(const ProgramOptions &options, std::function<void()> onMounted) {
+    FuseFileSystemNative *Cli::_runFilesystem(const ProgramOptions &options, std::function<void()> onMounted) {
+        FuseFileSystemNative *fuseFileSystemNative = nullptr;
         try {
             LocalStateDir localStateDir(Environment::localStateDir());
 
@@ -313,9 +314,9 @@ namespace cryfs_cli {
                       << std::endl;
 
             if (options.foreground()) {
-                fuse->runInForeground(options.mountDir(), options.fuseOptions());
+                fuseFileSystemNative = fuse->runInForeground(options.mountDir(), options.fuseOptions());
             } else {
-                fuse->runInBackground(options.mountDir(), options.fuseOptions());
+                fuseFileSystemNative = fuse->runInBackground(options.mountDir(), options.fuseOptions());
             }
 
             if (stoppedBecauseOfIntegrityViolation) {
@@ -328,6 +329,7 @@ namespace cryfs_cli {
         } catch (...) {
             LOGE( "Crashed");
         }
+        return fuseFileSystemNative;
     }
 
     void Cli::_sanityCheckFilesystem(CryDevice *device) {
@@ -450,8 +452,9 @@ namespace cryfs_cli {
         return false;
     }
 
-    int Cli::main(jobject pathnameFileSystem, int argc, const char **argv, std::function<void()> onMounted) {
+    FuseFileSystemNative *Cli::main(jobject pathnameFileSystem, int argc, const char **argv, std::function<void()> onMounted) {
 //        cpputils::showBacktraceOnCrash();
+        FuseFileSystemNative *fuseFileSystemNative = nullptr;
         cpputils::set_thread_name("cryfs");
 
         try {
@@ -459,18 +462,18 @@ namespace cryfs_cli {
             auto edsDataFileSystem = make_shared<cpputils::EdsDataFileSystem>(make_shared<PathnameFileSystemNative>(pathnameFileSystem));
             ProgramOptions options = program_options::Parser(argc, argv).parse(edsDataFileSystem, CryCiphers::supportedCipherNames());
 //            _sanityChecks(options);
-            _runFilesystem(options, std::move(onMounted));
-            LOGI("Runfs");
+            fuseFileSystemNative = _runFilesystem(options, std::move(onMounted));
         } catch (const CryfsException &e) {
             LOGI("Error: %s", e.what());
             if (e.what() != string()) {
               std::cerr << "Error " << static_cast<int>(e.errorCode()) << ": " << e.what() << std::endl;
             }
-            return -exitCode(e.errorCode());
+//            return exitCode(e.errorCode());
         } catch (const std::runtime_error &e) {
             LOGI("Error: %s", e.what());
-            return -exitCode(ErrorCode::UnspecifiedError);
+//            return exitCode(ErrorCode::UnspecifiedError);
         }
-        return exitCode(ErrorCode::Success);
+//        return exitCode(ErrorCode::Success);
+        return fuseFileSystemNative;
     }
 }

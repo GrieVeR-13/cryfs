@@ -77,7 +77,7 @@ namespace blockstore {
 
         bool EdsBlockStore::remove(const BlockId &blockId) {
             auto filepath = _getFilepath(blockId);
-            ScopedLocalRef<jobject> fsObject(get_env(), pathnameFileSystemNative->getObject(filepath.string()));
+            ScopedLocalRef<jobject> fsObject(getEnv(), pathnameFileSystemNative->getObject(filepath.string()));
             FsObjectNative fileSystemObject(fsObject.get());
             if (!fileSystemObject.isFile()) { // TODO Is this branch necessary?
                 return false;
@@ -115,7 +115,7 @@ namespace blockstore {
 
         uint64_t EdsBlockStore::numBlocks() const {
             uint64_t count = 0;
-            auto env = get_env();
+            auto env = getEnv();
             ScopedLocalRef<jobjectArray> fsoArray(env, pathnameFileSystemNative->listMembers(_rootDir.string()));
             jsize numFiles = env->GetArrayLength(fsoArray.get());
             for (int i = 0; i < numFiles; i++) {
@@ -129,7 +129,7 @@ namespace blockstore {
         }
 
         uint64_t EdsBlockStore::estimateNumFreeBytes() const {
-            auto env = get_env();
+            auto env = getEnv();
             ScopedLocalRef<jobject> spaceInfoObject(env, pathnameFileSystemNative->getSpaceInfo(_rootDir.string()));
             SpaceInfoNative spaceInfoNative(env, spaceInfoObject.get());
             auto freeSpace = spaceInfoNative.getFreeSpace();
@@ -144,7 +144,7 @@ namespace blockstore {
         }
 
         void EdsBlockStore::forEachBlock(std::function<void(const BlockId &)> callback) const {
-            auto env = get_env();
+            auto env = getEnv();
             ScopedLocalRef<jobjectArray> prefixFsoArray(env, pathnameFileSystemNative->listMembers(_rootDir.string()));
             jsize numPrefixes = env->GetArrayLength(prefixFsoArray.get());
             for (int i = 0; i < numPrefixes; i++) {

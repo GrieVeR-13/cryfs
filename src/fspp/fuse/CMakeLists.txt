@@ -4,13 +4,12 @@ set(SOURCES
   ../impl/FilesystemImpl.cpp
   ../impl/Profiler.cpp
   ../fuse/Fuse.cpp
-  ../fuse/fuseeds/FuseEds.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 #target_compile_definitions(${PROJECT_NAME} PUBLIC _FILE_OFFSET_BITS=64) //todoe
-target_link_libraries(${PROJECT_NAME} PUBLIC cpp-utils fspp-interface)
+target_link_libraries(${PROJECT_NAME} PUBLIC cpp-utils fspp-interface fusefs)
 
 target_add_boost(${PROJECT_NAME})
 target_enable_style_warnings(${PROJECT_NAME})
@@ -27,7 +26,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     message(FATAL_ERROR "Unsupported architecture: ${TARGET_ARCH}")
   endif()
 
-  target_include_directories(${PROJECT_NAME} PUBLIC "${DOKAN_PATH}/include")
+  target_include_directories(${PROJECT_NAME} PUBLIC "${DOKAN_PATH}/include" "${FUSEFS_INCLUDE_PATH}")
   target_link_libraries(${PROJECT_NAME} PUBLIC "${DOKAN_LIB_PATH}/lib/dokan1.lib")
   #target_link_libraries(${PROJECT_NAME} PUBLIC "${DOKAN_LIB_PATH}/lib/dokannp1.lib")
   target_link_libraries(${PROJECT_NAME} PUBLIC "${DOKAN_LIB_PATH}/lib/dokanfuse1.lib")
@@ -40,6 +39,7 @@ else() # Linux and macOS
 #  find_package(PkgConfig REQUIRED)
 #  pkg_check_modules(fuseeds REQUIRED IMPORTED_TARGET fuseeds)
 #  target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::Fuse)
+  target_include_directories(${PROJECT_NAME} PUBLIC ${FUSEFS_INCLUDE_PATH})
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

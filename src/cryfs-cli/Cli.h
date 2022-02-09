@@ -13,16 +13,17 @@
 #include "CallAfterTimeout.h"
 #include <cryfs/impl/config/CryConfigLoader.h>
 #include <cryfs/impl/ErrorCodes.h>
+#include <FuseFileSystemNative.h>
 
 namespace cryfs_cli {
     class Cli final {
     public:
         Cli(cpputils::RandomGenerator &keyGenerator, const cpputils::SCryptSettings& scryptSettings, std::shared_ptr<cpputils::Console> console);
-        int main(jobject pathnameFileSystem, int argc, const char **argv, std::function<void()> onMounted);
+        FuseFileSystemNative *main(jobject pathnameFileSystem, int argc, const char **argv, std::function<void()> onMounted);
 
     private:
         void _checkForUpdates(cpputils::unique_ref<cpputils::HttpClient> httpClient);
-        void _runFilesystem(const program_options::ProgramOptions &options, std::function<void()> onMounted);
+        FuseFileSystemNative *_runFilesystem(const program_options::ProgramOptions &options, std::function<void()> onMounted);
         cryfs::CryConfigLoader::ConfigLoadResult _loadOrCreateConfig(const program_options::ProgramOptions &options, const cryfs::LocalStateDir& localStateDir);
         void _checkConfigIntegrity(const cpputils::FsAndPath& basedir, const cryfs::LocalStateDir& localStateDir, const cryfs::CryConfigFile& config, bool allowReplacedFilesystem);
         cpputils::either<cryfs::CryConfigFile::LoadError, cryfs::CryConfigLoader::ConfigLoadResult> _loadOrCreateConfigFile(cpputils::FsAndPath configFilePath, cryfs::LocalStateDir localStateDir, const boost::optional<std::string> &cipher, const boost::optional<uint32_t> &blocksizeBytes, bool allowFilesystemUpgrade, const boost::optional<bool> &missingBlockIsIntegrityViolation, bool allowReplacedFilesystem);
