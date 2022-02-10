@@ -136,6 +136,9 @@ namespace cpputils {
 
     std::unique_ptr<std::istream> EdsDataFileSystem::openInputStream(const boost::filesystem::path &path) const {  //todoe std::ios::binary ?
         try {
+            if (!pathnameFileSystemNative->exists(path.string())) {
+                throw Exception();
+            }
             auto inputStreamObject = ScopedLocalRef<jobject>(getEnv(), pathnameFileSystemNative->openRandomAccessIO(path.string()));
             return std::make_unique<InputStreamNativeIStream>(inputStreamObject.get());
         }
