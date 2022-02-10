@@ -187,6 +187,7 @@ void fusepp_destroy(void *userdata) {
   ASSERT(userdata == f, "Wrong userdata set");
   UNUSED(userdata); //In case the assert is disabled
   f->destroy();
+  delete f;
 }
 
 int fusepp_access(const char *path, int mask) {

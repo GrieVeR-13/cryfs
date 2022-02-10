@@ -21,6 +21,10 @@ namespace cryfs {
 class CryDevice final: public fspp::Device {
 public:
   CryDevice(std::shared_ptr<CryConfigFile> config, cpputils::unique_ref<blockstore::BlockStore2> blockStore, const LocalStateDir& localStateDir, uint32_t myClientId, bool allowIntegrityViolations, bool missingBlockIsIntegrityViolation, std::function<void ()> onIntegrityViolation);
+  ~CryDevice() {
+    int a;
+    a = 1;
+  }
 
   statvfs statfs() override;
 
