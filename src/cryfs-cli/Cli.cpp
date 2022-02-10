@@ -78,7 +78,7 @@ using gitversion::VersionCompare;
 namespace cryfs_cli {
 
     Cli::Cli(RandomGenerator &keyGenerator, const SCryptSettings &scryptSettings, shared_ptr<Console> console):
-            _keyGenerator(keyGenerator), _scryptSettings(scryptSettings), _console(), _noninteractive(false), _idleUnmounter(none), _device(none) {
+            _keyGenerator(keyGenerator), _scryptSettings(scryptSettings), _console(), _noninteractive(false), _idleUnmounter(none) {
         _noninteractive = Environment::isNoninteractive();
         if (_noninteractive) {
             _console = make_shared<NoninteractiveConsole>(console);
@@ -287,13 +287,13 @@ namespace cryfs_cli {
               }
             };
             const bool missingBlockIsIntegrityViolation = config.configFile->config()->missingBlockIsIntegrityViolation();
-            _device = optional<unique_ref<CryDevice>>(make_unique_ref<CryDevice>(std::move(config.configFile), std::move(blockStore), std::move(localStateDir), config.myClientId, options.allowIntegrityViolations(), missingBlockIsIntegrityViolation, std::move(onIntegrityViolation)));
+            auto _device = optional<unique_ref<CryDevice>>(make_unique_ref<CryDevice>(std::move(config.configFile), std::move(blockStore), std::move(localStateDir), config.myClientId, options.allowIntegrityViolations(), missingBlockIsIntegrityViolation, std::move(onIntegrityViolation)));
             _sanityCheckFilesystem(_device->get());
 
             auto initFilesystem = [&] (fspp::fuse::Fuse *fs){
                 ASSERT(_device != none, "File system not ready to be initialized. Was it already initialized before?");
 
-                //TODO Test auto unmounting after idle timeout
+//                //TODO Test auto unmounting after idle timeout
 //                const boost::optional<double> idle_minutes = options.unmountAfterIdleMinutes();
 //                _idleUnmounter = _createIdleCallback(idle_minutes, [fs, idle_minutes] {
 //                    LOG(INFO, "Unmounting because file system was idle for {} minutes", *idle_minutes);
@@ -302,7 +302,7 @@ namespace cryfs_cli {
 //                if (_idleUnmounter != none) {
 //                    (*_device)->onFsAction(std::bind(&CallAfterTimeout::resetTimer, _idleUnmounter->get()));
 //                }
-                make_shared<fspp::FilesystemImpl>(std::move(*_device))->closeFile(0);
+
                 return make_shared<fspp::FilesystemImpl>(std::move(*_device));
             };
 
@@ -329,6 +329,7 @@ namespace cryfs_cli {
         } catch (...) {
             LOGE( "Crashed");
         }
+        int b;
         return fuseFileSystemNative;
     }
 

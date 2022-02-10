@@ -50,7 +50,7 @@ namespace cryfs_cli {
         std::shared_ptr<cpputils::Console> _console;
         bool _noninteractive;
         boost::optional<cpputils::unique_ref<CallAfterTimeout>> _idleUnmounter;
-        boost::optional<cpputils::unique_ref<cryfs::CryDevice>> _device;
+//        boost::optional<cpputils::unique_ref<cryfs::CryDevice>> _device;
 
         DISALLOW_COPY_AND_ASSIGN(Cli);
     };
