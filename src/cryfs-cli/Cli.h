@@ -13,7 +13,7 @@
 #include "CallAfterTimeout.h"
 #include <cryfs/impl/config/CryConfigLoader.h>
 #include <cryfs/impl/ErrorCodes.h>
-#include <FuseFileSystemNative.h>
+#include <FuseEds.h>
 
 namespace cryfs_cli {
     class Cli final {

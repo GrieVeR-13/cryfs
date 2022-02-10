@@ -3,7 +3,7 @@
 
 #include <jni.h>
 #include <string>
-#include <FuseFileSystemNative.h>
+#include <FuseEds.h>
 
 namespace cryfs_cli {
 
