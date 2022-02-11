@@ -276,7 +276,7 @@ void Fuse::_logUnknownException() {
   LOG(ERR, "Unknown exception thrown");
 }
 
-FuseFileSystemNative * Fuse::runInForeground(const bf::path &mountdir, vector<string> fuseOptions) {
+FuseSession * Fuse::runInForeground(const bf::path &mountdir, vector<string> fuseOptions) {
   vector<string> realFuseOptions = std::move(fuseOptions);
   if (std::find(realFuseOptions.begin(), realFuseOptions.end(), "-f") == realFuseOptions.end()) {
     realFuseOptions.push_back("-f");
@@ -284,7 +284,7 @@ FuseFileSystemNative * Fuse::runInForeground(const bf::path &mountdir, vector<st
   return _run(mountdir, std::move(realFuseOptions));
 }
 
-FuseFileSystemNative * Fuse::runInBackground(const bf::path &mountdir, vector<string> fuseOptions) {
+FuseSession * Fuse::runInBackground(const bf::path &mountdir, vector<string> fuseOptions) {
   vector<string> realFuseOptions = std::move(fuseOptions);
   _removeAndWarnIfExists(&realFuseOptions, "-f");
   _removeAndWarnIfExists(&realFuseOptions, "-d");
@@ -349,7 +349,7 @@ vector<string> extractAllAtimeOptionsAndRemoveOnesUnknownToLibfuse_(vector<strin
 }
 }
 
-FuseFileSystemNative * Fuse::_run(const bf::path &mountdir, vector<string> fuseOptions) {
+FuseSession * Fuse::_run(const bf::path &mountdir, vector<string> fuseOptions) {
 #if defined(__GLIBC__)|| defined(__APPLE__) || defined(_MSC_VER)
   // Avoid encoding errors for non-utf8 characters, see https://github.com/cryfs/cryfs/issues/247
   // this is ifdef'd out for non-glibc linux, because musl doesn't handle this correctly.

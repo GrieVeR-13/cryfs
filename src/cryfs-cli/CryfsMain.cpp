@@ -14,7 +14,7 @@ namespace cryfs_cli {
                 cpputils::FsAndPath(edsDataFileSystem, boost::filesystem::path(configGroupPathname)));
     }
 
-    FuseFileSystemNative *openFuseFileSystemNative(jobject pathnameFileSystem, const std::string &groupPathname) {
+    FuseSession *openFuseFileSystemNative(jobject pathnameFileSystem, const std::string &groupPathname) {
         int argc = 3;
         const char *argv[] = {"cryfs", groupPathname.c_str(), "/mountdir"};
         try {

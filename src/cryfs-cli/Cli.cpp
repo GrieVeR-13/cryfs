@@ -262,8 +262,8 @@ namespace cryfs_cli {
         }
     }
 
-    FuseFileSystemNative *Cli::_runFilesystem(const ProgramOptions &options, std::function<void()> onMounted) {
-        FuseFileSystemNative *fuseFileSystemNative = nullptr;
+    FuseSession *Cli::_runFilesystem(const ProgramOptions &options, std::function<void()> onMounted) {
+        FuseSession *fuseFileSystemNative = nullptr;
         try {
             LocalStateDir localStateDir(Environment::localStateDir());
 
@@ -451,9 +451,9 @@ namespace cryfs_cli {
         return false;
     }
 
-    FuseFileSystemNative *Cli::main(jobject pathnameFileSystem, int argc, const char **argv, std::function<void()> onMounted) {
+    FuseSession *Cli::main(jobject pathnameFileSystem, int argc, const char **argv, std::function<void()> onMounted) {
 //        cpputils::showBacktraceOnCrash();
-        FuseFileSystemNative *fuseFileSystemNative = nullptr;
+        FuseSession *fuseFileSystemNative = nullptr;
         cpputils::set_thread_name("cryfs");
 
         try {
