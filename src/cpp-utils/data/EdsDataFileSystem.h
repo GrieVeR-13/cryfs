@@ -30,6 +30,8 @@ namespace cpputils {
 
         std::unique_ptr<std::ostream> openOutputStream(const boost::filesystem::path &path) const;
 
+        uint64_t getLength(const boost::filesystem::path &path) const;
+
     private:
         std::shared_ptr<PathnameFileSystemNative> pathnameFileSystemNative;
     };

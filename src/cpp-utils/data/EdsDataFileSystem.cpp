@@ -2,6 +2,7 @@
 #include <util.h>
 #include <nativehelper/ScopedLocalRef.h>
 #include <Exception.h>
+#include <filesystem/FsObjectNative.h>
 #include "EdsDataFileSystem.h"
 
 namespace cpputils {
@@ -159,5 +160,11 @@ namespace cpputils {
         catch(const Exception &e) {
             return std::make_unique<std::basic_ostream<char>>(nullptr);
         }
+    }
+
+    uint64_t EdsDataFileSystem::getLength(const boost::filesystem::path &path) const { //todo move to stream
+        ScopedLocalRef<jobject> fsObject(getEnv(), pathnameFileSystemNative->getObject(path.string()));
+        FsObjectNative fileSystemObject(fsObject.get());
+        return fileSystemObject.getSize();
     }
 }

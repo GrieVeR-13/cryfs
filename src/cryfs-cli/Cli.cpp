@@ -151,7 +151,7 @@ namespace cryfs_cli {
             string password;
             bool again = false;
             do {
-                password = console->askPassword("Password: ");
+                password = console->askPassword("Password: "); //todoe
                 if (!_checkPassword(password)) {
                     again = true;
                     continue;

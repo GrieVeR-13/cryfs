@@ -20,7 +20,7 @@ optional<Data> Data::LoadFromFile(const FsAndPath &filepath) {
   if (!file->good()) {
     return boost::none;
   }
-  optional<Data> result(LoadFromStream(*file));
+  optional<Data> result(LoadFromStream(*file, filepath.getDataFileSystem()->getLength(filepath.getPath())));
   if (!file->good()) {
     throw std::runtime_error("Error reading from file");
   }

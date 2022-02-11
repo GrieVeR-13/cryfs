@@ -33,6 +33,11 @@ namespace cpputils {
             return std::make_unique<std::ofstream>(path.string().c_str(), std::ios::binary | std::ios::trunc);
         }
 
+
+        virtual uint64_t getLength(const boost::filesystem::path &path) const {
+            return 0;
+        }
+
     };
 }
 
