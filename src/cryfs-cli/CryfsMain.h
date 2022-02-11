@@ -9,7 +9,7 @@ namespace cryfs_cli {
 
     void setCryfsConfig(jobject pathnameFileSystem, const std::string &configGroupPathname);
 
-    FuseSession *openFuseFileSystemNative(jobject pathnameFileSystem, const std::string &groupPathname);
+    FuseSession *openFuseSession(jobject pathnameFileSystem, const std::string &groupPathname);
 };
 
 #endif
