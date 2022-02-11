@@ -16,7 +16,7 @@ namespace cryfs_cli {
 
     FuseSession *openFuseSession(jobject pathnameFileSystem, const std::string &groupPathname) {
         int argc = 3;
-        const char *argv[] = {"cryfs", groupPathname.c_str(), "/mountdir"}; //todoe
+        const char *argv[] = {"cryfs", groupPathname.c_str(), "/mountdir"};
         try {
             auto &keyGenerator = cpputils::Random::OSRandom();
             return cryfs_cli::Cli(keyGenerator, cpputils::SCrypt::TestSettings, std::make_shared<cpputils::EdsConsole>())

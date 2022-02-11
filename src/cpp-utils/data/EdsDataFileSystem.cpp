@@ -135,7 +135,7 @@ namespace cpputils {
         pathnameFileSystemNative->deleteObject(path.string());
     }
 
-    std::unique_ptr<std::istream> EdsDataFileSystem::openInputStream(const boost::filesystem::path &path) const {  //todoe std::ios::binary ?
+    std::unique_ptr<std::istream> EdsDataFileSystem::openInputStream(const boost::filesystem::path &path) const {  //std::ios::binary ?
         try {
             if (!pathnameFileSystemNative->exists(path.string())) {
                 throw Exception();
@@ -149,7 +149,7 @@ namespace cpputils {
 
     }
 
-    std::unique_ptr<std::ostream> EdsDataFileSystem::openOutputStream(const boost::filesystem::path &path) const { //todoe std::ios::binary | std::ios::trunc ?
+    std::unique_ptr<std::ostream> EdsDataFileSystem::openOutputStream(const boost::filesystem::path &path) const { //std::ios::binary | std::ios::trunc ?
         try {
             if (!pathnameFileSystemNative->exists(path.string())) {
                 pathnameFileSystemNative->newFile(path.string());

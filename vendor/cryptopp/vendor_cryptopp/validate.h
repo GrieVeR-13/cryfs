@@ -290,7 +290,7 @@ inline std::string AddSeparator(std::string str)
 // encountered this problem rather quickly during testing of Crypto++ 8.1
 // when Crypto++ 8.0 was installed locally. It took some time to realize
 // where the old test data was coming from.
-static std::string GetDataDir() //todoe
+static std::string GetDataDir()
 {
 	std::ifstream file;
 	std::string name, filename = "TestData/usage.dat";
@@ -319,7 +319,7 @@ static std::string GetDataDir() //todoe
 	return "./";
 }
 
-inline std::string DataDir(const std::string& filename) //todoe
+inline std::string DataDir(const std::string& filename)
 {
 	std::string name;
 	std::ifstream file;

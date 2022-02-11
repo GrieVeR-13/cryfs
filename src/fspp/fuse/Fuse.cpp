@@ -311,24 +311,25 @@ void extractAllAtimeOptionsAndRemoveOnesUnknownToLibfuse_(string* csv_options, v
     const auto is_fuse_unsupported_atime_flag = [] (const std::string& flag) {
         constexpr std::array<const char*, 3> flags = {"strictatime", "relatime", "nodiratime"};
         return flags.end() != std::find(flags.begin(), flags.end(), flag);
-    };//todoe */
-//    *csv_options = ranges::make_subrange(csv_options->begin(), csv_options->end())
-//        | ranges::views::split(',')
-//        | ranges::views::filter(
-//            [&] (auto&& elem_) {
-//                // TODO string_view would be better
-//                std::string elem(&*elem_.begin(), ranges::distance(elem_));
-//                if (is_fuse_unsupported_atime_flag(elem)) {
-//                    result->push_back(elem);
-//                    return false;
-//                }
-//                if (is_fuse_supported_atime_flag(elem)) {
-//                    result->push_back(elem);
-//                }
-//                return true;
-//            })
-//        | ranges::views::join(',')
-//        | ranges::to<string>();
+    };
+    *csv_options = ranges::make_subrange(csv_options->begin(), csv_options->end())
+        | ranges::views::split(',')
+        | ranges::views::filter(
+            [&] (auto&& elem_) {
+                // TODO string_view would be better
+                std::string elem(&*elem_.begin(), ranges::distance(elem_));
+                if (is_fuse_unsupported_atime_flag(elem)) {
+                    result->push_back(elem);
+                    return false;
+                }
+                if (is_fuse_supported_atime_flag(elem)) {
+                    result->push_back(elem);
+                }
+                return true;
+            })
+        | ranges::views::join(',')
+        | ranges::to<string>();
+    */
 }
 
 // Return a list of all atime options (e.g. atime, noatime, relatime, strictatime, nodiratime) that occur in the
