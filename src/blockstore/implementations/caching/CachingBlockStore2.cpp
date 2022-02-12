@@ -2,6 +2,7 @@
 #include <memory>
 #include <cpp-utils/assert/assert.h>
 #include <cpp-utils/system/get_total_memory.h>
+#include <log.h>
 
 using std::string;
 using std::mutex;

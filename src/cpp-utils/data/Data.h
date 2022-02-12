@@ -10,7 +10,6 @@
 #include <fstream>
 #include "../assert/assert.h"
 #include "../pointer/unique_ref.h"
-#include "filesystem/PathnameFileSystemNative.h"
 #include "FsAndPath.h"
 
 namespace cpputils {
@@ -66,7 +65,6 @@ public:
   //TODO Test LoadFromStream/StoreToStream
   static Data LoadFromStream(std::istream &stream);
   static Data LoadFromStream(std::istream &stream, size_t size);
-
   void StoreToStream(std::ostream &stream) const;
 
   // TODO Unify ToString/FromString functions from Data/FixedSizeData using free functions
