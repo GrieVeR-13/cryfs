@@ -88,24 +88,24 @@ namespace cryfs_cli {
     }
 
     void Cli::_showVersion(unique_ref<HttpClient> httpClient) {
-//        cout << "CryFS Version " << gitversion::VersionString() << endl;
-//        if (gitversion::IsDevVersion()) {
-//            cout << "WARNING! This is a development version based on git commit " << gitversion::GitCommitId() <<
-//            ". Please do not use in production!" << endl;
-//        } else if (!gitversion::IsStableVersion()) {
-//            cout << "WARNING! This is an experimental version. Please backup your data frequently!" << endl;
-//        }
+/*        cout << "CryFS Version " << gitversion::VersionString() << endl;
+        if (gitversion::IsDevVersion()) {
+            cout << "WARNING! This is a development version based on git commit " << gitversion::GitCommitId() <<
+            ". Please do not use in production!" << endl;
+        } else if (!gitversion::IsStableVersion()) {
+            cout << "WARNING! This is an experimental version. Please backup your data frequently!" << endl;
+        }*/
 #ifndef NDEBUG
         cout << "WARNING! This is a debug build. Performance might be slow." << endl;
 #endif
 #ifndef CRYFS_NO_UPDATE_CHECKS
-//        if (Environment::noUpdateCheck()) {
-//            cout << "Automatic checking for security vulnerabilities and updates is disabled." << endl;
-//        } else if (Environment::isNoninteractive()) {
-//            cout << "Automatic checking for security vulnerabilities and updates is disabled in noninteractive mode." << endl;
-//        } else {
-//            _checkForUpdates(std::move(httpClient));
-//        }
+/*        if (Environment::noUpdateCheck()) {
+            cout << "Automatic checking for security vulnerabilities and updates is disabled." << endl;
+        } else if (Environment::isNoninteractive()) {
+            cout << "Automatic checking for security vulnerabilities and updates is disabled in noninteractive mode." << endl;
+        } else {
+            _checkForUpdates(std::move(httpClient));
+        }*/
 #else
 # warning Update checks are disabled. The resulting executable will not go online to check for newer versions or known security vulnerabilities.
         UNUSED(httpClient);
@@ -114,17 +114,17 @@ namespace cryfs_cli {
     }
 
     void Cli::_checkForUpdates(unique_ref<HttpClient> httpClient) {
-//        VersionChecker versionChecker(httpClient.get());
-//        optional<string> newestVersion = versionChecker.newestVersion();
-//        if (newestVersion == none) {
-//            cout << "Could not check for updates." << endl;
-//        } else if (VersionCompare::isOlderThan(gitversion::VersionString(), *newestVersion)) {
-//            cout << "CryFS " << *newestVersion << " is released. Please update." << endl;
-//        }
-//        optional<string> securityWarning = versionChecker.securityWarningFor(gitversion::VersionString());
-//        if (securityWarning != none) {
-//            cout << *securityWarning << endl;
-//        }
+/*        VersionChecker versionChecker(httpClient.get());
+        optional<string> newestVersion = versionChecker.newestVersion();
+        if (newestVersion == none) {
+            cout << "Could not check for updates." << endl;
+        } else if (VersionCompare::isOlderThan(gitversion::VersionString(), *newestVersion)) {
+            cout << "CryFS " << *newestVersion << " is released. Please update." << endl;
+        }
+        optional<string> securityWarning = versionChecker.securityWarningFor(gitversion::VersionString());
+        if (securityWarning != none) {
+            cout << *securityWarning << endl;
+        }*/
     }
 
     bool Cli::_checkPassword(const string &password) {
@@ -274,34 +274,34 @@ namespace cryfs_cli {
             bool stoppedBecauseOfIntegrityViolation = false;
 
             auto onIntegrityViolation = [&fuse, &stoppedBecauseOfIntegrityViolation] () {
-//              if (fuse != nullptr) {
-//                LOG(ERR, "Integrity violation detected. Unmounting.");
-//                stoppedBecauseOfIntegrityViolation = true;
-//                fuse->stop();
-//              } else {
+/*              if (fuse.get() != nullptr) {
+                LOG(ERR, "Integrity violation detected. Unmounting.");
+                stoppedBecauseOfIntegrityViolation = true;
+                fuse->stop();
+              } else {
                 // Usually on an integrity violation, the file system is unmounted.
                 // Here, the file system isn't initialized yet, i.e. we failed in the initial steps when
                 // setting up _device before running initFilesystem.
                 // We can't unmount a not-mounted file system, but we can make sure it doesn't get mounted.
-//                throw CryfsException("Integrity violation detected. Unmounting.", ErrorCode::IntegrityViolation);
-//              }
+                throw CryfsException("Integrity violation detected. Unmounting.", ErrorCode::IntegrityViolation);
+              }*/
             };
             const bool missingBlockIsIntegrityViolation = config.configFile->config()->missingBlockIsIntegrityViolation();
             auto _device = unique_ref<CryDevice>(make_unique_ref<CryDevice>(std::move(config.configFile), std::move(blockStore), std::move(localStateDir), config.myClientId, options.allowIntegrityViolations(), missingBlockIsIntegrityViolation, std::move(onIntegrityViolation)));
             _sanityCheckFilesystem(_device.get());
 
             auto initFilesystem = [&] (fspp::fuse::Fuse *fs){
-//                ASSERT(_device != none, "File system not ready to be initialized. Was it already initialized before?");
+/*                ASSERT(_device != none, "File system not ready to be initialized. Was it already initialized before?");
 
-//                //TODO Test auto unmounting after idle timeout
-//                const boost::optional<double> idle_minutes = options.unmountAfterIdleMinutes();
-//                _idleUnmounter = _createIdleCallback(idle_minutes, [fs, idle_minutes] {
-//                    LOG(INFO, "Unmounting because file system was idle for {} minutes", *idle_minutes);
-//                    fs->stop();
-//                });
-//                if (_idleUnmounter != none) {
-//                    (*_device)->onFsAction(std::bind(&CallAfterTimeout::resetTimer, _idleUnmounter->get()));
-//                }
+                //TODO Test auto unmounting after idle timeout
+                const boost::optional<double> idle_minutes = options.unmountAfterIdleMinutes();
+                _idleUnmounter = _createIdleCallback(idle_minutes, [fs, idle_minutes] {
+                    LOG(INFO, "Unmounting because file system was idle for {} minutes", *idle_minutes);
+                    fs->stop();
+                });
+                if (_idleUnmounter != none) {
+                    (*_device)->onFsAction(std::bind(&CallAfterTimeout::resetTimer, _idleUnmounter->get()));
+                }*/
                 return make_shared<fspp::FilesystemImpl>(std::move(_device));
             };
 
@@ -354,7 +354,7 @@ namespace cryfs_cli {
 
     void Cli::_initLogfile(const ProgramOptions &options) {
 //        spdlog::drop("cryfs");
-        //TODO Test that --logfile parameter works. Should be: file if specified, otherwise stderr if foreground, else syslog.
+//        //TODO Test that --logfile parameter works. Should be: file if specified, otherwise stderr if foreground, else syslog.
 //        if (options.logFile() != none) {
 //            cpputils::logging::setLogger(
 //                spdlog::create<spdlog::sinks::basic_file_sink_mt>("cryfs", options.logFile()->string()));
@@ -366,16 +366,16 @@ namespace cryfs_cli {
     }
 
 	void Cli::_sanityChecks(const ProgramOptions &options) {
-//		_checkDirAccessible(bf::absolute(options.baseDir()), "base directory", options.createMissingBasedir(), ErrorCode::InaccessibleBaseDir);
-//
-//		if (!options.mountDirIsDriveLetter()) {
-//			_checkDirAccessible(options.mountDir(), "mount directory", options.createMissingMountpoint(), ErrorCode::InaccessibleMountDir);
-//			_checkMountdirDoesntContainBasedir(options);
-//		} else {
-//			if (bf::exists(options.mountDir())) {
-//				throw CryfsException("Drive " + options.mountDir().string() + " already exists.", ErrorCode::InaccessibleMountDir);
-//			}
-//		}
+/*		_checkDirAccessible(bf::absolute(options.baseDir()), "base directory", options.createMissingBasedir(), ErrorCode::InaccessibleBaseDir);
+
+		if (!options.mountDirIsDriveLetter()) {
+			_checkDirAccessible(options.mountDir(), "mount directory", options.createMissingMountpoint(), ErrorCode::InaccessibleMountDir);
+			_checkMountdirDoesntContainBasedir(options);
+		} else {
+			if (bf::exists(options.mountDir())) {
+				throw CryfsException("Drive " + options.mountDir().string() + " already exists.", ErrorCode::InaccessibleMountDir);
+			}
+		}*/
     }
 
     void Cli::_checkDirAccessible(const bf::path &dir, const std::string &name, bool createMissingDir, ErrorCode errorCode) {
@@ -431,9 +431,9 @@ namespace cryfs_cli {
     }
 
     void Cli::_checkMountdirDoesntContainBasedir(const ProgramOptions &options) {
-//        if (_pathContains(options.mountDir(), options.baseDir())) {
-//            throw CryfsException("base directory can't be inside the mount directory.", ErrorCode::BaseDirInsideMountDir);
-//        }
+/*        if (_pathContains(options.mountDir(), options.baseDir())) {
+            throw CryfsException("base directory can't be inside the mount directory.", ErrorCode::BaseDirInsideMountDir);
+        }*/
     }
 
     bool Cli::_pathContains(const bf::path &parent, const bf::path &child) {
@@ -463,13 +463,13 @@ namespace cryfs_cli {
 //            _sanityChecks(options);
             fuseFileSystemNative = _runFilesystem(options, std::move(onMounted));
         } catch (const CryfsException &e) {
-            LOGI("Error: %s", e.what());
+            LOGE("Error: %s", e.what());
             if (e.what() != string()) {
               std::cerr << "Error " << static_cast<int>(e.errorCode()) << ": " << e.what() << std::endl;
             }
 //            return exitCode(e.errorCode());
         } catch (const std::runtime_error &e) {
-            LOGI("Error: %s", e.what());
+            LOGE("Error: %s", e.what());
 //            return exitCode(ErrorCode::UnspecifiedError);
         }
 //        return exitCode(ErrorCode::Success);

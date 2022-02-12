@@ -20,7 +20,7 @@ namespace cryfs_cli {
         try {
             auto &keyGenerator = cpputils::Random::OSRandom();
             return cryfs_cli::Cli(keyGenerator, cpputils::SCrypt::TestSettings, std::make_shared<cpputils::EdsConsole>(password))
-                    .main(pathnameFileSystem, argc, argv, [] {}); //todoe openmp
+                    .main(pathnameFileSystem, argc, argv, [] {});
         } catch (const std::exception &e) {
             return nullptr;
         }

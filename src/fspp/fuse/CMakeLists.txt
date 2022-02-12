@@ -4,7 +4,7 @@ set(SOURCES
   ../impl/FilesystemImpl.cpp
   ../impl/Profiler.cpp
   ../fuse/Fuse.cpp
-        )
+)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
@@ -37,7 +37,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 else() # Linux and macOS
 #  find_package(PkgConfig REQUIRED)
-#  pkg_check_modules(fuseeds REQUIRED IMPORTED_TARGET fuseeds)
+#  pkg_check_modules(Fuse REQUIRED IMPORTED_TARGET fuse)
 #  target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::Fuse)
   target_include_directories(${PROJECT_NAME} PUBLIC ${FUSEFS_INCLUDE_PATH})
 endif()

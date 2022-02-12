@@ -1,12 +1,4 @@
-if ("${ANDROID_ABI}" STREQUAL "armeabi-v7a")
-    set(SHORT_ABI a32)
-elseif("${ANDROID_ABI}" STREQUAL "arm64-v8a")
-    set(SHORT_ABI a64)
-elseif("${ANDROID_ABI}" STREQUAL "x86")
-    set(SHORT_ABI x32)
-elseif("${ANDROID_ABI}" STREQUAL "x86_64")
-    set(SHORT_ABI x64)
-endif()
+project (cpp-utils)
 
 set(SOURCES
         crypto/symmetric/ciphers.cpp
@@ -70,49 +62,46 @@ set(SOURCES
         value_type/ValueType.cpp
 )
 
-add_library(cpp-utils STATIC ${SOURCES})
-target_link_libraries(cpp-utils PUBLIC boost_filesystem boost_thread boost_chrono boost_program_options)
-#target_link_libraries(CryfsDependencies_boost INTERFACE Boost::boost Boost::filesystem Boost::thread Boost::chrono Boost::program_options)
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
+target_link_libraries(${PROJECT_NAME} PUBLIC boost_filesystem boost_thread boost_chrono boost_program_options)
 
 
 if(MSVC)
-    target_link_libraries(cpp-utils PUBLIC DbgHelp)
+    target_link_libraries(${PROJECT_NAME} PUBLIC DbgHelp)
 elseif (APPLE)
-    target_compile_definitions(cpp-utils PRIVATE BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED)
 else()
     find_program(ADDR2LINE addr2line)
     if ("${ADDR2LINE}" STREQUAL "ADDR2LINE-NOTFOUND")
         message(WARNING "addr2line not found. Backtraces will be reduced.")
     else()
         message(STATUS "addr2line found. Using it for backtraces.")
-        target_compile_definitions(cpp-utils PRIVATE BOOST_STACKTRACE_USE_ADDR2LINE)
-        target_compile_definitions(cpp-utils PRIVATE BOOST_STACKTRACE_ADDR2LINE_LOCATION=${ADDR2LINE})
+        target_compile_definitions(${PROJECT_NAME} PRIVATE BOOST_STACKTRACE_USE_ADDR2LINE)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE BOOST_STACKTRACE_ADDR2LINE_LOCATION=${ADDR2LINE})
     endif()
 endif()
 
 if (NOT MSVC)
 #  find_package(CURL REQUIRED)
-#  target_include_directories(cpp-utils PUBLIC ${CURL_INCLUDE_DIRS})
-  target_link_libraries(cpp-utils PUBLIC ${CURL_LIBRARIES})
+#  target_include_directories(${PROJECT_NAME} PUBLIC ${CURL_INCLUDE_DIRS})
+#  target_link_libraries(${PROJECT_NAME} PUBLIC ${CURL_LIBRARIES})
 else()
-  target_link_libraries(cpp-utils PUBLIC WinHttp)
+#  target_link_libraries(${PROJECT_NAME} PUBLIC WinHttp)
 endif()
 
 find_package(Threads REQUIRED)
-target_link_libraries(cpp-utils PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
-target_link_libraries(cpp-utils PUBLIC ${CMAKE_DL_LIBS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
 
-target_link_libraries(cpp-utils PUBLIC cryptopp)
-#target_link_libraries(cpp-utils PUBLIC boost_filesystem)
-#target_link_libraries(cpp-utils PUBLIC CryfsDependencies_spdlog cryptopp CryfsDependencies_range-v3)
+#target_link_libraries(${PROJECT_NAME} PUBLIC CryfsDependencies_spdlog cryptopp CryfsDependencies_range-v3)
+target_link_libraries(${PROJECT_NAME} PUBLIC cryptopp)
 
-target_add_boost(cpp-utils)
-target_enable_style_warnings(cpp-utils)
-target_activate_cpp14(cpp-utils)
+target_add_boost(${PROJECT_NAME})
+target_enable_style_warnings(${PROJECT_NAME})
+target_activate_cpp14(${PROJECT_NAME})
 
 if(MSVC)
     # Required by range-v3, see its README.md
-    target_compile_options(cpp-utils PUBLIC /experimental:preprocessor /permissive- /Zc:twoPhase-)
+    target_compile_options(${PROJECT_NAME} PUBLIC /experimental:preprocessor /permissive- /Zc:twoPhase-)
 endif()
-

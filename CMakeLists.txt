@@ -46,7 +46,6 @@ endif()
 
 include(${DEPENDENCY_CONFIG})
 
-
 add_subdirectory(vendor EXCLUDE_FROM_ALL)
 
 include_directories(vendor/cryptopp)

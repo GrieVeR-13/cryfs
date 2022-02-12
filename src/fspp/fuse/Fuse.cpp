@@ -233,12 +233,12 @@ fuse_operations *operations() {
     singleton->flush = &fusepp_flush;
     singleton->release = &fusepp_release;
     singleton->fsync = &fusepp_fsync;
-  #ifdef HAVE_SYS_XATTR_H
+  /*#ifdef HAVE_SYS_XATTR_H
     singleton->setxattr = &fusepp_setxattr;
     singleton->getxattr = &fusepp_getxattr;
     singleton->listxattr = &fusepp_listxattr;
     singleton->removexattr = &fusepp_removexattr;
-  #endif
+  #endif*/
     singleton->opendir = &fusepp_opendir;
     singleton->readdir = &fusepp_readdir;
     singleton->releasedir = &fusepp_releasedir;
