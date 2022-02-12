@@ -23,12 +23,17 @@ CachingBlockStore2::CachedBlock::CachedBlock(const CachingBlockStore2* blockStor
 }
 
 CachingBlockStore2::CachedBlock::~CachedBlock() {
-  if (_dirty) {
-    _blockStore->_baseBlockStore->store(_blockId, _data);
+  try {
+    if (_dirty) {
+      _blockStore->_baseBlockStore->store(_blockId, _data);
+    }
+  }
+  catch(std::exception &e) {
+    LOGE("~CachingBlockStore2 %s", e.what());
   }
   // remove it from the list of blocks not in the base store, if it's on it
-//  unique_lock<mutex> lock(_blockStore->_cachedBlocksNotInBaseStoreMutex);
-//  _blockStore->_cachedBlocksNotInBaseStore.erase(_blockId); //todoe crash randomly
+  unique_lock<mutex> lock(_blockStore->_cachedBlocksNotInBaseStoreMutex);
+  _blockStore->_cachedBlocksNotInBaseStore.erase(_blockId);
 }
 
 const Data& CachingBlockStore2::CachedBlock::read() const {

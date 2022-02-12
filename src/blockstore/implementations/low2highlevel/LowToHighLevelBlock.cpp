@@ -1,3 +1,4 @@
+#include <log.h>
 #include "LowToHighLevelBlock.h"
 
 using boost::optional;
@@ -44,7 +45,12 @@ LowToHighLevelBlock::LowToHighLevelBlock(const BlockId &blockId, Data data, Bloc
 
 LowToHighLevelBlock::~LowToHighLevelBlock() {
   unique_lock<mutex> lock(_mutex);
-  _storeToBaseBlock();
+  try {
+    _storeToBaseBlock();
+  }
+  catch(std::exception &e) {
+    LOGE("~LowToHighLevelBlock %s", e.what());
+  }
 }
 
 const void *LowToHighLevelBlock::data() const {
