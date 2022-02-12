@@ -180,7 +180,7 @@ inline void Data::StoreToFile(const cpputils::FsAndPath &filepath) const {
 //  std::ofstream file(filepath.string().c_str(), std::ios::binary | std::ios::trunc);
   auto file = filepath.getDataFileSystem()->openOutputStream(filepath.getPath());
   if (!file->good()) {
-      throw std::runtime_error("Could not open file for writing");
+      throw std::runtime_error(std::string("Could not open file for writing ") + filepath.getPath().string());
   }
   StoreToStream(*file);
   if (!file->good()) {

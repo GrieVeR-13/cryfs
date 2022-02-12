@@ -11,6 +11,7 @@
 #include <cpp-utils/assert/assert.h>
 #include <cpp-utils/lock/MutexPoolLock.h>
 #include <cpp-utils/pointer/gcc_4_8_compatibility.h>
+#include <log.h>
 
 namespace blockstore {
 namespace caching {

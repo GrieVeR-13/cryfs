@@ -27,8 +27,8 @@ CachingBlockStore2::CachedBlock::~CachedBlock() {
     _blockStore->_baseBlockStore->store(_blockId, _data);
   }
   // remove it from the list of blocks not in the base store, if it's on it
-  unique_lock<mutex> lock(_blockStore->_cachedBlocksNotInBaseStoreMutex);
-  _blockStore->_cachedBlocksNotInBaseStore.erase(_blockId);
+//  unique_lock<mutex> lock(_blockStore->_cachedBlocksNotInBaseStoreMutex);
+//  _blockStore->_cachedBlocksNotInBaseStore.erase(_blockId); //todoe crash randomly
 }
 
 const Data& CachingBlockStore2::CachedBlock::read() const {
