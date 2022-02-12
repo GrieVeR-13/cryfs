@@ -1,7 +1,3 @@
-#SET(LIBBOOST_DIR ../../../boost)\
-#SET(LIBBOOST_DIR ../../../../../third_party/boost)
-#add_library(boost_filesystem STATIC IMPORTED)
-
 if ("${ANDROID_ABI}" STREQUAL "armeabi-v7a")
     set(SHORT_ABI a32)
 elseif("${ANDROID_ABI}" STREQUAL "arm64-v8a")
@@ -11,9 +7,6 @@ elseif("${ANDROID_ABI}" STREQUAL "x86")
 elseif("${ANDROID_ABI}" STREQUAL "x86_64")
     set(SHORT_ABI x64)
 endif()
-
-#set_target_properties(boost_filesystem
-#        PROPERTIES IMPORTED_LOCATION ${LIBBOOST_DIR}/libs/${ANDROID_ABI}/libboost_filesystem-clang-mt-${SHORT_ABI}-1_74.a)
 
 set(SOURCES
         crypto/symmetric/ciphers.cpp
