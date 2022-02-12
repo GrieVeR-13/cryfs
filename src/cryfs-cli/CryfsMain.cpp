@@ -14,12 +14,12 @@ namespace cryfs_cli {
                 cpputils::FsAndPath(edsDataFileSystem, boost::filesystem::path(configGroupPathname)));
     }
 
-    FuseSession *openFuseSession(jobject pathnameFileSystem, const std::string &groupPathname) {
+    FuseSession *openFuseSession(jobject pathnameFileSystem, const std::string &groupPathname, const std::string &password) {
         int argc = 3;
         const char *argv[] = {"cryfs", groupPathname.c_str(), "/mountdir"};
         try {
             auto &keyGenerator = cpputils::Random::OSRandom();
-            return cryfs_cli::Cli(keyGenerator, cpputils::SCrypt::TestSettings, std::make_shared<cpputils::EdsConsole>())
+            return cryfs_cli::Cli(keyGenerator, cpputils::SCrypt::TestSettings, std::make_shared<cpputils::EdsConsole>(password))
                     .main(pathnameFileSystem, argc, argv, [] {}); //todoe openmp
         } catch (const std::exception &e) {
             return nullptr;

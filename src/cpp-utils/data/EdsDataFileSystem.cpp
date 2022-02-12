@@ -138,12 +138,12 @@ namespace cpputils {
     std::unique_ptr<std::istream> EdsDataFileSystem::openInputStream(const boost::filesystem::path &path) const {  //std::ios::binary ?
         try {
             if (!pathnameFileSystemNative->exists(path.string())) {
-                throw Exception();
+                throw util::Exception();
             }
             auto inputStreamObject = ScopedLocalRef<jobject>(getEnv(), pathnameFileSystemNative->openRandomAccessIO(path.string()));
             return std::make_unique<InputStreamNativeIStream>(inputStreamObject.get());
         }
-        catch(const Exception &e) {
+        catch(const util::Exception &e) {
             return std::make_unique<std::basic_istream<char>>(nullptr);
         }
 
@@ -157,7 +157,7 @@ namespace cpputils {
             auto outputStreamObject = ScopedLocalRef<jobject>(getEnv(), pathnameFileSystemNative->openRandomAccessIO(path.string()));
             return std::make_unique<OutputStreamNativeOStream>(outputStreamObject.get());
         }
-        catch(const Exception &e) {
+        catch(const util::Exception &e) {
             return std::make_unique<std::basic_ostream<char>>(nullptr);
         }
     }

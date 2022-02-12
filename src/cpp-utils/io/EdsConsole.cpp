@@ -6,7 +6,7 @@ using std::shared_ptr;
 
 namespace cpputils {
 
-EdsConsole::EdsConsole() {
+EdsConsole::EdsConsole(const std::string &password) : password(password) {
 }
 
 bool EdsConsole::askYesNo(const string &/*question*/, bool defaultValue) {
@@ -22,7 +22,7 @@ unsigned int EdsConsole::ask(const string &/*question*/, const vector<string> &/
 }
 
 string EdsConsole::askPassword(const string &question) {
-    return "1"; //todoe
+    return password;
 }
 
 }
