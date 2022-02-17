@@ -130,7 +130,7 @@ namespace blockstore {
 
         uint64_t EdsBlockStore::estimateNumFreeBytes() const {
             auto env = getEnv();
-            ScopedLocalRef<jobject> spaceInfoObject(env, pathnameFileSystemNative->getSpaceInfo(_rootDir.string()));
+            ScopedLocalRef<jobject> spaceInfoObject(env, pathnameFileSystemNative->getSpaceInfoObject(_rootDir.string()));
             SpaceInfoNative spaceInfoNative(env, spaceInfoObject.get());
             auto freeSpace = spaceInfoNative.getFreeSpace();
             return freeSpace;
