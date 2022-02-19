@@ -21,7 +21,7 @@ namespace cryfs {
     }
 
     void LocalStateDir::_createDirIfNotExists(const cpputils::FsAndPath &path) {
-        if (!path.getDataFileSystem()->exists(path.getPath())) {
+        if (!path.getDataFileSystem()->exists(path.getPath())) { //exception is normal
             path.getDataFileSystem()->create_directories(path.getPath());
         }
     }

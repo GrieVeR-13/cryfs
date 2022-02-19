@@ -44,7 +44,7 @@ LocalStateMetadata LocalStateMetadata::loadOrGenerate(const cpputils::FsAndPath 
 
 optional<LocalStateMetadata> LocalStateMetadata::load_(const cpputils::FsAndPath &metadataFilePath) {
 //  ifstream file(metadataFilePath.getPath().string());
-  auto file = metadataFilePath.getDataFileSystem()->openInputStream(metadataFilePath.getPath());
+  auto file = metadataFilePath.getDataFileSystem()->openInputStream(metadataFilePath.getPath()); //exception is normal
   if (!file->good()) {
     // State file doesn't exist
     return none;
@@ -71,7 +71,7 @@ uint32_t generateClientId_() {
 optional<uint32_t> _tryLoadClientIdFromLegacyFile(const cpputils::FsAndPath &metadataFilePath) {
   auto myClientIdFile = metadataFilePath.getPath().parent_path() / "myClientId";
 //  ifstream file(myClientIdFile.string());
-  auto file = metadataFilePath.getDataFileSystem()->openInputStream(myClientIdFile);
+  auto file = metadataFilePath.getDataFileSystem()->openInputStream(myClientIdFile); //exception is normal
   if (!file->good()) {
     return none;
   }

@@ -58,7 +58,7 @@ either<CryConfigFile::LoadError, unique_ref<CryConfigFile>> CryConfigFile::load(
 }
 
 unique_ref<CryConfigFile> CryConfigFile::create(cpputils::FsAndPath path, CryConfig config, CryKeyProvider* keyProvider) {
-    if (path.getDataFileSystem()->exists(path.getPath())) {
+    if (path.getDataFileSystem()->exists(path.getPath())) { //exception is normal
         throw std::runtime_error("Config file exists already.");
     }
     auto result = make_unique_ref<CryConfigFile>(std::move(path), std::move(config), CryConfigEncryptorFactory::deriveNewKey(keyProvider), CryConfigFile::Access::ReadWrite);

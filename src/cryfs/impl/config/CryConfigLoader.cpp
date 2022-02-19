@@ -110,7 +110,7 @@ either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> CryConfigLoa
 }
 
 either<CryConfigFile::LoadError, CryConfigLoader::ConfigLoadResult> CryConfigLoader::loadOrCreate(cpputils::FsAndPath filename, bool allowFilesystemUpgrade, bool allowReplacedFilesystem) {
-  if (filename.getDataFileSystem()->exists(filename.getPath())) {
+  if (filename.getDataFileSystem()->exists(filename.getPath())) { //exception is normal
     return _loadConfig(std::move(filename), allowFilesystemUpgrade, allowReplacedFilesystem, CryConfigFile::Access::ReadWrite);
   } else {
     return _createConfig(std::move(filename), allowReplacedFilesystem);

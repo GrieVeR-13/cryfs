@@ -26,7 +26,7 @@ ptree _load(const cpputils::FsAndPath &metadataFilePath) {
 	try {
 		ptree result;
 //        ifstream file(metadataFilePath.getPath().string());
-        auto file = metadataFilePath.getDataFileSystem()->openInputStream(metadataFilePath.getPath());
+        auto file = metadataFilePath.getDataFileSystem()->openInputStream(metadataFilePath.getPath()); //exception is normal
 		if (file->good()) {
 			read_json(*file, result);
 		}

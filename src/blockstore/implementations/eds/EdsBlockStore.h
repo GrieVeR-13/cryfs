@@ -34,7 +34,7 @@ namespace blockstore {
             void forEachBlock(std::function<void(const BlockId &)> callback) const override;
 
         private:
-            std::shared_ptr<PathnameFileSystemNative> pathnameFileSystemNative;
+            std::shared_ptr<PathnameFileSystemNative> pathnameFileSystemNative; //todoe check all excp
 
             boost::filesystem::path _rootDir;
 

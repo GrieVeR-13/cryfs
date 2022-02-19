@@ -16,7 +16,7 @@ namespace cpputils {
 
 optional<Data> Data::LoadFromFile(const FsAndPath &filepath) {
 //  ifstream file(filepath.string().c_str(), ios::binary);
-  auto file = filepath.getDataFileSystem()->openInputStream(filepath.getPath());
+  auto file = filepath.getDataFileSystem()->openInputStream(filepath.getPath()); //exception is normal
   if (!file->good()) {
     return boost::none;
   }
