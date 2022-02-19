@@ -16,12 +16,15 @@ using std::string;
 using boost::optional;
 using boost::none;
 using cpputils::Data;
+using util::Exception;
 
 namespace blockstore {
     namespace eds {
 
-        EdsBlockStore::EdsBlockStore(const cpputils::FsAndPath& path) :
-                pathnameFileSystemNative(dynamic_cast<const cpputils::EdsDataFileSystem &> (*path.getDataFileSystem()).getPathnameFileSystemNative()), _rootDir(path.getPath()) {
+        EdsBlockStore::EdsBlockStore(const cpputils::FsAndPath &path) :
+                pathnameFileSystemNative(
+                        dynamic_cast<const cpputils::EdsDataFileSystem &> (*path.getDataFileSystem()).getPathnameFileSystemNative()),
+                _rootDir(path.getPath()) {
         }
 
 
@@ -65,9 +68,10 @@ namespace blockstore {
         }
 
 
-        bool EdsBlockStore::tryCreate(const BlockId &blockId, const Data &data) {
+        bool
+        EdsBlockStore::tryCreate(const BlockId &blockId, const Data &data) { //todoe check another class, not EdsBlockStore
             auto filepath = _getFilepath(blockId);
-            if (pathnameFileSystemNative->exists(filepath.string())) {
+            if (pathnameFileSystemNative->exists(filepath.string())) { //exception is normal
                 return false;
             }
 
@@ -77,25 +81,30 @@ namespace blockstore {
 
         bool EdsBlockStore::remove(const BlockId &blockId) {
             auto filepath = _getFilepath(blockId);
-            ScopedLocalRef<jobject> fsObject(getEnv(), pathnameFileSystemNative->getObject(filepath.string()));
-            FsObjectNative fileSystemObject(fsObject.get());
-            if (!fileSystemObject.isFile()) { // TODO Is this branch necessary?
+            auto env = getEnv();
+            try {
+                auto fileSystemObject = pathnameFileSystemNative->getFsObjectNative(filepath.string(), env);
+                if (!fileSystemObject->isFile()) {
+                    return false;
+                }
+                pathnameFileSystemNative->deleteObject(filepath.string(), env);
+            }
+            catch (Exception &e) {
                 return false;
             }
-            /*bool retval =*/ pathnameFileSystemNative->deleteObject(filepath.string());
-//            if (!retval) {
-//                cpputils::logging::LOG(cpputils::logging::ERR, "Couldn't find block {} to remove", blockId.ToString());
-//                return false;
-//            }
-//            if (boost::filesystem::is_empty(filepath.parent_path())) {
-//                boost::filesystem::remove(filepath.parent_path());
-//            }
-            pathnameFileSystemNative->deleteObject(filepath.parent_path().string());
+            try {
+                if (pathnameFileSystemNative->getNumberOfGroupMembers(filepath.parent_path().string(), env) == 0) {
+                    pathnameFileSystemNative->deleteObject(filepath.parent_path().string(), env);
+                }
+            }
+            catch (Exception &e) {
+            }
             return true;
         }
 
-        optional<Data> EdsBlockStore::load(const BlockId &blockId) const {
-            auto fsAndPath = cpputils::FsAndPath(std::make_shared<cpputils::EdsDataFileSystem>(pathnameFileSystemNative), _getFilepath(blockId));
+        optional<Data> EdsBlockStore::load(const BlockId &blockId) const { //exception is normal
+            auto fsAndPath = cpputils::FsAndPath(std::make_shared<cpputils::EdsDataFileSystem>(pathnameFileSystemNative),
+                                                 _getFilepath(blockId));
             auto fileContent = Data::LoadFromFile(fsAndPath);
             if (fileContent == none) {
                 return boost::none;
@@ -103,37 +112,52 @@ namespace blockstore {
             return _checkAndRemoveHeader(*fileContent);
         }
 
-        void EdsBlockStore::store(const BlockId &blockId, const Data &data) {
+        void EdsBlockStore::store(const BlockId &blockId, const Data &data) { //exception is normal
             Data fileContent(formatVersionHeaderSize() + data.size());
             std::memcpy(fileContent.data(), FORMAT_VERSION_HEADER.c_str(), formatVersionHeaderSize());
             std::memcpy(fileContent.dataOffset(formatVersionHeaderSize()), data.data(), data.size());
             auto filepath = _getFilepath(blockId);
-            pathnameFileSystemNative->newGroup(filepath.parent_path().string(), false); // TODO Instead create all of them once at fs creation time?
-            auto fsAndPath = cpputils::FsAndPath(std::make_shared<cpputils::EdsDataFileSystem>(pathnameFileSystemNative), filepath);
+            pathnameFileSystemNative->newGroup(filepath.parent_path().string(),
+                                               false); // TODO Instead create all of them once at fs creation time?
+            auto fsAndPath = cpputils::FsAndPath(std::make_shared<cpputils::EdsDataFileSystem>(pathnameFileSystemNative),
+                                                 filepath);
             fileContent.StoreToFile(fsAndPath);
         }
 
         uint64_t EdsBlockStore::numBlocks() const {
             uint64_t count = 0;
-            auto env = getEnv();
-            ScopedLocalRef<jobjectArray> fsoArray(env, pathnameFileSystemNative->listMembers(_rootDir.string()));
-            jsize numFiles = env->GetArrayLength(fsoArray.get());
-            for (int i = 0; i < numFiles; i++) {
-                ScopedLocalRef<jobject> fso(env, env->GetObjectArrayElement(fsoArray.get(), i));
-                FsObjectNative fsObjectNative(fso.get());
-                if (fsObjectNative.isGroup()) {
-                    count += pathnameFileSystemNative->getNumberOfGroupMembers((_rootDir / fsObjectNative.getName()).string()); //todo check
+            try {
+                auto env = getEnv();
+                auto fsoArray = pathnameFileSystemNative->listMembers(_rootDir.string());
+                jsize numFiles = env->GetArrayLength(fsoArray.get());
+                for (int i = 0; i < numFiles; i++) {
+                    ScopedLocalRef<jobject> fso(env, env->GetObjectArrayElement(fsoArray.get(), i));
+                    FsObjectNative fsObjectNative(fso.get());
+                    if (fsObjectNative.isGroup()) {
+                        try {
+                            count += pathnameFileSystemNative->getNumberOfGroupMembers(
+                                    (_rootDir / fsObjectNative.getName()).string());
+                        }
+                        catch (Exception &exception) {
+                        }
+                    }
                 }
             }
+            catch (Exception &exception) {
+            }
+
             return count;
         }
 
         uint64_t EdsBlockStore::estimateNumFreeBytes() const {
-            auto env = getEnv();
-            ScopedLocalRef<jobject> spaceInfoObject(env, pathnameFileSystemNative->getSpaceInfoObject(_rootDir.string()));
-            SpaceInfoNative spaceInfoNative(env, spaceInfoObject.get());
-            auto freeSpace = spaceInfoNative.getFreeSpace();
-            return freeSpace;
+            try {
+                auto spaceInfoNative = pathnameFileSystemNative->getSpaceInfoObjectNative(_rootDir.string());
+                return spaceInfoNative->getFreeSpace();
+            }
+            catch (Exception &exception) {
+                return 0;
+            }
+
         }
 
         uint64_t EdsBlockStore::blockSizeFromPhysicalBlockSize(uint64_t blockSize) const {
@@ -145,34 +169,45 @@ namespace blockstore {
 
         void EdsBlockStore::forEachBlock(std::function<void(const BlockId &)> callback) const {
             auto env = getEnv();
-            ScopedLocalRef<jobjectArray> prefixFsoArray(env, pathnameFileSystemNative->listMembers(_rootDir.string()));
-            jsize numPrefixes = env->GetArrayLength(prefixFsoArray.get());
-            for (int i = 0; i < numPrefixes; i++) {
-                ScopedLocalRef<jobject> prefixObject(env, env->GetObjectArrayElement(prefixFsoArray.get(), i));
-                FsObjectNative prefixFsObjectNative(prefixObject.get());
-                if (!prefixFsObjectNative.isGroup())
-                    continue;
+            try {
+                auto prefixFsoArray = pathnameFileSystemNative->listMembers(_rootDir.string(), env);
+                jsize numPrefixes = env->GetArrayLength(prefixFsoArray.get());
+                for (int i = 0; i < numPrefixes; i++) {
+                    ScopedLocalRef<jobject> prefixObject(env, env->GetObjectArrayElement(prefixFsoArray.get(), i));
+                    FsObjectNative prefixFsObjectNative(prefixObject.get());
+                    if (!prefixFsObjectNative.isGroup())
+                        continue;
 
-                std::string blockIdPrefix = prefixFsObjectNative.getName();
-                if (blockIdPrefix.size() != PREFIX_LENGTH || std::string::npos != blockIdPrefix.find_first_not_of(ALLOWED_BLOCKID_CHARACTERS)) {
-                    // directory has wrong length or an invalid character
-                    continue;
-                }
-                ScopedLocalRef<jobjectArray> blockArray(env, pathnameFileSystemNative->listMembers((_rootDir / prefixFsObjectNative.getName()).string()));
-                jsize numBlocks = env->GetArrayLength(blockArray.get());
-                for (int j = 0; j < numBlocks; j++) {
-                    ScopedLocalRef<jobject> blockObject(env, env->GetObjectArrayElement(blockArray.get(), j));
-                    FsObjectNative blockFsObjectNative(blockObject.get());
-
-                    std::string blockIdPostfix = blockFsObjectNative.getName();
-                    if (blockIdPostfix.size() != POSTFIX_LENGTH || std::string::npos != blockIdPostfix.find_first_not_of(ALLOWED_BLOCKID_CHARACTERS)) {
-                        // filename has wrong length or an invalid character
+                    std::string blockIdPrefix = prefixFsObjectNative.getName();
+                    if (blockIdPrefix.size() != PREFIX_LENGTH ||
+                        std::string::npos != blockIdPrefix.find_first_not_of(ALLOWED_BLOCKID_CHARACTERS)) {
+                        // directory has wrong length or an invalid character
                         continue;
                     }
+                    try {
+                        auto blockArray = pathnameFileSystemNative->listMembers(
+                                (_rootDir / prefixFsObjectNative.getName()).string(), env);
+                        jsize numBlocks = env->GetArrayLength(blockArray.get());
+                        for (int j = 0; j < numBlocks; j++) {
+                            ScopedLocalRef<jobject> blockObject(env, env->GetObjectArrayElement(blockArray.get(), j));
+                            FsObjectNative blockFsObjectNative(blockObject.get());
 
-                    callback(BlockId::FromString(blockIdPrefix + blockIdPostfix));
+                            std::string blockIdPostfix = blockFsObjectNative.getName();
+                            if (blockIdPostfix.size() != POSTFIX_LENGTH ||
+                                std::string::npos != blockIdPostfix.find_first_not_of(ALLOWED_BLOCKID_CHARACTERS)) {
+                                // filename has wrong length or an invalid character
+                                continue;
+                            }
 
+                            callback(BlockId::FromString(blockIdPrefix + blockIdPostfix));
+
+                        }
+                    }
+                    catch (Exception &exception) {
+                    }
                 }
+            }
+            catch (Exception &exception) {
             }
         }
     }

@@ -13,7 +13,7 @@ namespace cpputils {
 
         FsAndPath(std::shared_ptr<DataFileSystem> dataFileSystem, const boost::filesystem::path &path);
 
-        const std::shared_ptr<cpputils::DataFileSystem> &getDataFileSystem() const {
+        const std::shared_ptr<cpputils::DataFileSystem> &getDataFileSystem() const { //todoe check all for exception
             return dataFileSystem;
         }
 

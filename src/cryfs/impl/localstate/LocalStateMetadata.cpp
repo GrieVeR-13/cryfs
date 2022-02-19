@@ -54,7 +54,7 @@ optional<LocalStateMetadata> LocalStateMetadata::load_(const cpputils::FsAndPath
 
 void LocalStateMetadata::save_(const cpputils::FsAndPath &metadataFilePath) const {
 //  ofstream file(metadataFilePath.getPath().string(), std::ios::trunc);
-    auto file = metadataFilePath.getDataFileSystem()->openOutputStreamObject(metadataFilePath.getPath());
+    auto file = metadataFilePath.getDataFileSystem()->openOutputStream(metadataFilePath.getPath()); //exception is normal
     serialize_(*file);
 }
 

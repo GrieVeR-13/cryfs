@@ -41,7 +41,7 @@ ptree _load(const cpputils::FsAndPath &metadataFilePath) {
 
 void _save(const cpputils::FsAndPath &metadataFilePath, const ptree& data) {
 //  ofstream file(metadataFilePath.getPath().string(), std::ios::trunc);
-  auto file = metadataFilePath.getDataFileSystem()->openOutputStreamObject(metadataFilePath.getPath());
+  auto file = metadataFilePath.getDataFileSystem()->openOutputStream(metadataFilePath.getPath()); //exception is normal
   write_json(*file, data);
 }
 
