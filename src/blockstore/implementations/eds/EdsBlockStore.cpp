@@ -69,7 +69,7 @@ namespace blockstore {
 
 
         bool
-        EdsBlockStore::tryCreate(const BlockId &blockId, const Data &data) { //todoe check another class, not EdsBlockStore
+        EdsBlockStore::tryCreate(const BlockId &blockId, const Data &data) {
             auto filepath = _getFilepath(blockId);
             if (pathnameFileSystemNative->exists(filepath.string())) { //exception is normal
                 return false;
