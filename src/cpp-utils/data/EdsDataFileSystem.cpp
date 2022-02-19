@@ -28,8 +28,8 @@ namespace cpputils {
             if (!pathnameFileSystemNative->exists(path.string(), env)) {
                 throw util::Exception();
             }
-            auto inputStreamObject = pathnameFileSystemNative->openRandomAccessIO(path.string(), env);
-            return std::make_unique<InputStreamNativeIStream>(inputStreamObject);
+            auto randomAccessReader = pathnameFileSystemNative->openRandomAccessReader(path.string(), env);
+            return std::make_unique<InputStreamNativeIStream>(randomAccessReader);
         }
         catch(const util::Exception &e) {
             return std::make_unique<std::basic_istream<char>>(nullptr);
@@ -39,11 +39,12 @@ namespace cpputils {
 
     std::unique_ptr<std::ostream> EdsDataFileSystem::openOutputStream(const boost::filesystem::path &path) const { //std::ios::binary | std::ios::trunc ?
         try {
-            if (!pathnameFileSystemNative->exists(path.string())) {
-                pathnameFileSystemNative->newFile(path.string());
+            auto env = getEnv();
+            if (!pathnameFileSystemNative->exists(path.string(), env)) {
+                pathnameFileSystemNative->newFile(path.string(), env);
             }
-            auto outputStreamObject = pathnameFileSystemNative->openRandomAccessIOObject(path.string());
-            return std::make_unique<OutputStreamNativeOStream>(outputStreamObject.get()); //todoe to native
+            auto randomAccessIoNative = pathnameFileSystemNative->openRandomAccessIO(path.string(), env);
+            return std::make_unique<OutputStreamNativeOStream>(randomAccessIoNative);
         }
         catch(const util::Exception &e) {
             return std::make_unique<std::basic_ostream<char>>(nullptr);
